@@ -11,10 +11,10 @@ to still be counted as present by letting their professor know that they were pr
 
 ### Developers:
 <ul>
-<li>Alba Mustafaj</li>
-<li>Argert Boja</li>
-<li>Ndricim Rrapi</li>
-<li>Rubin Daija</li>
+<li><a href="https://github.com/AlbaMustafaj">Alba Mustafaj</a></li>
+<li><a href="https://github.com/argertboja">Argert Boja</a></li>
+<li><a href="https://github.com/ndricimrr">Ndricim Rrapi</a></li>
+<li><a href="">Rubin Daija</a></li>
 </ul>
 <hr /> 
 
