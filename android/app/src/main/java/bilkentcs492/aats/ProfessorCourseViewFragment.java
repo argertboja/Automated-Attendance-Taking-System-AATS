@@ -1,7 +1,10 @@
 package bilkentcs492.aats;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,18 +14,25 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_OK;
+import static bilkentcs492.aats.ProfessorCourseViewFragment.GridViewClickListener.REQUEST_IMAGE_CAPTURE;
 
 
 /**
@@ -34,10 +44,11 @@ public class ProfessorCourseViewFragment extends Fragment {
 
     public View rootView;
     Bundle args;
-    ArrayList<String> listOfFoods;
+    ArrayList<ImageItem> studentList;
     private GridView gridView;
-
-    private StudentsGridViewAdaptor adaptor;
+    private EditText searchBar;
+    private StudentsGridViewAdaptor adapter;
+    private String student_objection_ID; // CURRENT STUDENT BEING MARKED AS PRESENT MANUALLY
 
     public ProfessorCourseViewFragment() {
         // Required empty public constructor
@@ -49,12 +60,31 @@ public class ProfessorCourseViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView =  (View) inflater.inflate(R.layout.fragment_professor_course_view, container, false);
-
+        searchBar = (EditText) rootView.findViewById(R.id.search_bar) ;
         gridView = (GridView) rootView.findViewById(R.id.grid_view);
-
-        StudentsGridViewAdaptor adaptor = new StudentsGridViewAdaptor(getActivity(), R.layout.grid_item_layout,getStudentData(new ArrayList<Student> ()) );
-        gridView.setAdapter(adaptor);
+        studentList = getStudentData(new ArrayList<Student> ());
+        adapter = new StudentsGridViewAdaptor(getActivity(), R.layout.grid_item_layout,studentList );
+        gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new GridViewClickListener(getActivity()));
+
+        // Add on text change listener for the search bar
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                Log.e("edit text=",charSequence+"_");
+                adapter.filter( charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
         return rootView;
     }
 
@@ -67,14 +97,14 @@ public class ProfessorCourseViewFragment extends Fragment {
     private ArrayList<ImageItem> getStudentData(ArrayList<Student> studentList){
         // currently add dummy data
         final ArrayList<ImageItem> imageItems = new ArrayList<>();
-        String filename = "mona.jpg";
+        String filename = "21500342";
         Log.e("Ckemi","oooooooooooo123");
 
         InputStream ims = null;
         try {
-            ims = getActivity().getAssets().open( filename);
+            ims = getActivity().getAssets().open( "mona.jpg");
         } catch (NullPointerException | IOException e) {
-            Log.e("ERROR 1",imageItems.get(19).getTitle());
+            Log.e("ERROR 1",imageItems.get(19).getStudentID());
 
             e.printStackTrace();
 
@@ -84,19 +114,21 @@ public class ProfessorCourseViewFragment extends Fragment {
         Bitmap bitmap = getRoundedCornerBitmap(BitmapFactory.decodeStream(ims));
         if(bitmap==null)
             bitmap =BitmapFactory.decodeStream(ims);
-        imageItems.add(new ImageItem(bitmap, filename));
         try {
             ims.close();
         } catch (IOException e) {
-            Log.e("ERROR 2",imageItems.get(19).getTitle());
+            Log.e("ERROR 2",imageItems.get(19).getStudentID());
 
             e.printStackTrace();
         }
 
         for (int i = 0; i < 50; i++){
-            imageItems.add(new ImageItem(bitmap, filename));
+            imageItems.add(new ImageItem(bitmap, filename,true));
         }
-        Log.e("Ckemi",imageItems.get(19).getTitle());
+        imageItems.add(new ImageItem(bitmap, "21500010",false));
+        imageItems.add(new ImageItem(bitmap, "21500009",false));
+
+        Log.e("Ckemi",imageItems.get(19).getStudentID());
 
         return imageItems;
     }
@@ -143,13 +175,63 @@ public class ProfessorCourseViewFragment extends Fragment {
             context = cnt;
         }
         @Override
-        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-            Toast.makeText(context,"Hello there clicker", Toast.LENGTH_SHORT);
+        public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
+            final String clicked_ID = studentList.get(position).getStudentID();
+             new AlertDialog.Builder(context)
+                    .setTitle("Mark Presence")
+                    .setMessage("Mark Student with id : "  + clicked_ID +" as ?")
+
+                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                    // The dialog is automatically dismissed when a dialog button is clicked.
+                    .setPositiveButton(R.string.present, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(context,"Take a Picture", Toast.LENGTH_SHORT).show();
+                            // take a picture here
+                            student_objection_ID = clicked_ID;
+                            dispatchTakePictureIntent();
+                        }
+                    })
+
+                    .setNegativeButton(R.string.absent, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(context,"MARKED ABSENT", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+
+                    // A null listener allows the button to dismiss the dialog and take no further action.
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
 //            Intent intent = new Intent(context, dsfdssfvw3cx.class);
 //            ImageView imageThumbnail =(ImageView) v.findViewById(R.id.imageThumbnail);
 //            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity)context, imageThumbnail, "smooth_Details");
 //            intent.putExtra("image",listOfFoods.get(position));
 //            startActivity(intent,options.toBundle());
+        }
+
+        static final int REQUEST_IMAGE_CAPTURE = 1;
+
+        public void dispatchTakePictureIntent() {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+
+
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            Toast.makeText(getActivity(),"Picture taken and sent to server", Toast.LENGTH_SHORT).show();
+
+            // SEND BITMAP TO SERVER AND MARK STUDENT AS PRESENT ON SERVER SIDE THROUGH HERE
+
+//                imageView.setImageBitmap(imageBitmap);
         }
     }
 

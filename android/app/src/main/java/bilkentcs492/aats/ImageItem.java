@@ -6,6 +6,9 @@ package bilkentcs492.aats;
  * Date        :  03/11/2019
  * Time        : 11 | 21: 05 of 03 2019
  * Package name: bilkentcs492.aats
+ * Description : This class holds the current class data, for the professor's view,
+ *               An ImageItem contains a Bitmap of the students face and their ID number
+ *               Saving any other data for temporary reasons would be redundant
  * ALWAYS AIMING HIGH :D
  */
 
@@ -13,16 +16,21 @@ import android.graphics.Bitmap;
 
 public class ImageItem {
     private Bitmap image;
-    private String title;
+    private String studentID;
 
 
-    public ImageItem(Bitmap image, String title) {
+
+    private boolean isPresent;
+
+
+    ImageItem(Bitmap image, String title, boolean isPresent) {
         super();
         this.image = image;
-        this.title = title;
+        this.studentID = title;
+        this.isPresent = isPresent;
     }
 
-    public Bitmap getImage() {
+    Bitmap getImage() {
         return image;
     }
 
@@ -30,11 +38,19 @@ public class ImageItem {
         this.image = image;
     }
 
-    public String getTitle() {
-        return title;
+    String getStudentID() {
+        return studentID;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setStudentID(String studentID) {
+        this.studentID = studentID;
+    }
+
+    public boolean isPresent() {
+        return isPresent;
+    }
+
+    public void setPresent(boolean present) {
+        isPresent = present;
     }
 }

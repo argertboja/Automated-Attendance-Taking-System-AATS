@@ -25,4 +25,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="search_student_id_text">Search Student ID</string>
+    <string name="absent">Absent</string>
+    <string name="present">Present</string>
 </resources>
