@@ -14,7 +14,7 @@ to still be counted as present by letting their professor know that they were pr
 <li><a href="https://github.com/AlbaMustafaj">Alba Mustafaj</a></li>
 <li><a href="https://github.com/argertboja">Argert Boja</a></li>
 <li><a href="https://github.com/ndricimrr">Ndricim Rrapi</a></li>
-<li><a href="">Rubin Daija</a></li>
+<li><a href="https://github.com/RubinDaija">Rubin Daija</a></li>
 </ul>
 <hr /> 
 
