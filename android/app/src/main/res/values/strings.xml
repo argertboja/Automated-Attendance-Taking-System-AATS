@@ -22,4 +22,7 @@
     </string>
     <string name="error_incorrect_credentials">The credentials are not correct</string>
     <string name="title_activity_information">Information</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

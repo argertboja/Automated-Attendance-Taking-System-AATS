@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -92,10 +93,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_courses) {
-            // Handle the camera action
+            setTitle("Course Info");
+            ProfessorCourseViewFragment course_info_tab = new ProfessorCourseViewFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_fragment, course_info_tab).commit();
         } else if (id == R.id.nav_info) {
-            Intent open_app_info = new Intent(MainActivity.this, Information.class);
-            startActivity(open_app_info);
+            setTitle("App Info");
+            AppInfoTabFragment app_info_tab = new AppInfoTabFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_fragment, app_info_tab).commit();
         } else if (id == R.id.nav_settings) {
             Intent open_app_info = new Intent(MainActivity.this, Information.class);
             startActivity(open_app_info);
