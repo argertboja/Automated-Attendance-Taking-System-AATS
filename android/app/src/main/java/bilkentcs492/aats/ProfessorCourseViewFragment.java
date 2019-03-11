@@ -12,6 +12,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,12 @@ import java.util.ArrayList;
  */
 public class ProfessorCourseViewFragment extends Fragment {
 
+    public View rootView;
+    Bundle args;
+    ArrayList<String> listOfFoods;
+    private GridView gridView;
+
+    private StudentsGridViewAdaptor adaptor;
 
     public ProfessorCourseViewFragment() {
         // Required empty public constructor
@@ -41,14 +48,14 @@ public class ProfessorCourseViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  (View) inflater.inflate(R.layout.fragment_professor_course_view, container, false);
+        rootView =  (View) inflater.inflate(R.layout.fragment_professor_course_view, container, false);
 
-        GridView gridView = (GridView) v.findViewById(R.id.grid_view);
+        gridView = (GridView) rootView.findViewById(R.id.grid_view);
 
         StudentsGridViewAdaptor adaptor = new StudentsGridViewAdaptor(getActivity(), R.layout.grid_item_layout,getStudentData(new ArrayList<Student> ()) );
         gridView.setAdapter(adaptor);
         gridView.setOnItemClickListener(new GridViewClickListener(getActivity()));
-        return v;
+        return rootView;
     }
 
     /**
@@ -61,29 +68,36 @@ public class ProfessorCourseViewFragment extends Fragment {
         // currently add dummy data
         final ArrayList<ImageItem> imageItems = new ArrayList<>();
         String filename = "mona.jpg";
+        Log.e("Ckemi","oooooooooooo123");
 
         InputStream ims = null;
         try {
             ims = getActivity().getAssets().open( filename);
         } catch (NullPointerException | IOException e) {
+            Log.e("ERROR 1",imageItems.get(19).getTitle());
+
             e.printStackTrace();
 
         }
 
 //        Bitmap bitmap = getRoundedCornerBitmap(BitmapFactory.decodeStream(ims));
-        Bitmap bitmap = BitmapFactory.decodeStream(ims);
+        Bitmap bitmap = getRoundedCornerBitmap(BitmapFactory.decodeStream(ims));
         if(bitmap==null)
             bitmap =BitmapFactory.decodeStream(ims);
         imageItems.add(new ImageItem(bitmap, filename));
         try {
             ims.close();
         } catch (IOException e) {
+            Log.e("ERROR 2",imageItems.get(19).getTitle());
+
             e.printStackTrace();
         }
 
-        for (int i = 0; i < 20; i++){
+        for (int i = 0; i < 50; i++){
             imageItems.add(new ImageItem(bitmap, filename));
         }
+        Log.e("Ckemi",imageItems.get(19).getTitle());
+
         return imageItems;
     }
 

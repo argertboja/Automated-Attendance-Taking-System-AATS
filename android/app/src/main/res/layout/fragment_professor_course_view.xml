@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
@@ -10,9 +10,6 @@
     tools:context=".ProfessorCourseViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
-
-
 
 
         <ProgressBar
@@ -24,101 +21,103 @@
             android:minWidth="450dip"
             android:max="100"
             android:progress="85"
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/vertical_1"
-
-                android:layout_weight="0.5"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/present_num"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="#FF000000"
-                    android:text="Present :32" />
-
-                <TextView
-                    android:id="@+id/absent_num"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textColor="#c40303"
-                    android:textSize="16sp"
-                    android:text="Absent : 5" />
-
-                <TextView
-                    android:id="@+id/total_num"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textStyle="bold"
-                    android:textColor="#565454"
-                    android:textSize="16sp"
-                    android:text="Total: 37" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/percentage_num"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:textStyle="bold"
-                    android:gravity="end"
-                    android:textSize="20sp"
-                    android:textColor="#021684"
-                    android:text="75%" />
-
-                <TextView
-                    android:id="@+id/date"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:textStyle="bold"
-                    android:gravity="bottom|end"
-                    android:textSize="16sp"
-
-                    android:textColor="#FF000000"
-                    android:text="Date: 12/10/2018" />
-
-            </LinearLayout>
-        </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/info_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="0.1"
+        android:orientation="horizontal"
 
-        <GridView
-            android:id="@+id/grid_view"
-            android:contextClickable="true"
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
-            android:background="@color/colorPrimaryDark"
-            android:columnWidth="90dp"
-            android:gravity="center"
-            android:horizontalSpacing="10dp"
-            android:numColumns="auto_fit"
-            android:stretchMode="columnWidth"
-            android:verticalSpacing="10dp" />
+        >
+
+        <LinearLayout
+            android:id="@+id/vertical_1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/present_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Present :32"
+                android:textColor="#FF000000"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/absent_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Absent : 5"
+                android:textColor="#c40303"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/total_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Total: 37"
+                android:textColor="#565454"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/percentage_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="end"
+                android:text="75%"
+                android:textColor="#021684"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:gravity="bottom|end"
+                android:text="Date: 12/10/2018"
+                android:textColor="#FF000000"
+
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
     </LinearLayout>
+
+       <GridView
+            android:id="@+id/grid_view"
+            android:layout_width="match_parent"
+            android:layout_weight="0.7"
+            android:layout_height="0dp"
+            android:numColumns="4"
+            android:stretchMode="columnWidth"
+            android:gravity="center"
+            android:verticalSpacing="5dp"
+            android:horizontalSpacing="5dp"
+
+
+            android:focusable="true"
+            android:clickable="true"
+            android:drawSelectorOnTop="true"
+            android:paddingBottom="15dp"
+            android:clipToPadding="false"
+            />
 
 
 
