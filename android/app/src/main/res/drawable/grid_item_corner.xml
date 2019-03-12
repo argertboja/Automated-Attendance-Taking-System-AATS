@@ -11,7 +11,7 @@
     <!-- view border color and width -->
     <stroke
         android:width="2dp"
-        android:color="#435ade" >
+        android:color="#ADAEB6" >
 
     </stroke>
 
