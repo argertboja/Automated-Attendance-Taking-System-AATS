@@ -7,15 +7,15 @@
         <item
             android:id="@+id/nav_courses"
             android:icon="@drawable/ic_menu_courses"
-            android:title="Courses" />
+            android:title="Professor View" />
         <item
             android:id="@+id/nav_info"
             android:icon="@drawable/ic_menu_info_face_recognition"
             android:title="Information" />
         <item
             android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Settings" />
+            android:icon="@drawable/ic_menu_courses"
+            android:title="Student info" />
     </group>
 
     <!--<item android:studentID="Communicate">-->

@@ -1,9 +1,7 @@
 package bilkentcs492.aats;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -15,8 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import static bilkentcs492.aats.ProfessorCourseViewFragment.GridViewClickListener.REQUEST_IMAGE_CAPTURE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -107,8 +103,10 @@ public class MainActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.main_fragment, app_info_tab).commit();
         } else if (id == R.id.nav_settings) {
-            Intent open_app_info = new Intent(MainActivity.this, Information.class);
-            startActivity(open_app_info);
+            setTitle("Student Info");
+            StudentCourseViewFragment student_info_tab = new StudentCourseViewFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.main_fragment, student_info_tab).commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

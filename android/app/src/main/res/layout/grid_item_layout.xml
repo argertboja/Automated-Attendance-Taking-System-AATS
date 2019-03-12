@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginTop="5dp"
     android:orientation="vertical"
+    android:id="@+id/group_image"
     android:background="@drawable/grid_item_corner"
 
 

@@ -61,6 +61,7 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
             holder.imageTitle = (TextView) row.findViewById(R.id.student_id_text);
             holder.image = (ImageView) row.findViewById(R.id.student_image);
             holder.presentState = (TextView) row.findViewById(R.id.student_presence);
+//            holder.group = (LinearLayout) row.findViewById(R.id.group_image);
             row.setTag(holder);
 
         } else {
@@ -76,6 +77,7 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
         String colorCode = (item.isPresent()) ? "#1CCF09" : "#D6032D";
         holder.presentState.setText(presenceText);
         holder.presentState.setTextColor(Color.parseColor(colorCode));
+//        holder.group.setBackgroundColor(Color.parseColor(colorCode));
         holder.image.setImageBitmap(item.getImage());
 
         lastPosition = position;
@@ -86,6 +88,7 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
         TextView imageTitle;
         TextView presentState;
         ImageView image;
+//        LinearLayout group;
     }
 
     /**
