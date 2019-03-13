@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -23,8 +24,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
+        TextView hello = (TextView) findViewById(R.id.hellworld);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -47,11 +47,18 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // part of code to change nav header email
-//        View headerView = navigationView.getHeaderView(0);
-//        TextView navUsername = (TextView) headerView.findViewById(R.id.user_email);
-//        String temp_user_email = "tempUser" ;
-//        temp_user_email = (getIntent().getExtras().getString("user_email") != null) ? getIntent().getExtras().getString("user_email") : "userEmail";
-//        navUsername.setText(temp_user_email);
+        View headerView = navigationView.getHeaderView(0);
+        TextView navUserEmail = (TextView) headerView.findViewById(R.id.user_email);
+        TextView navUserName = (TextView) headerView.findViewById(R.id.user_name);
+        String temp_user_email, temp_user_name, temp_user_surname;
+        temp_user_email = (getIntent().getExtras().getString("user_email") != null) ? getIntent().getExtras().getString("user_email") : "userEmail";
+        temp_user_name = (getIntent().getExtras().getString("user_name") != null) ? getIntent().getExtras().getString("user_name") : "userName";
+        temp_user_surname = (getIntent().getExtras().getString("user_surname") != null) ? getIntent().getExtras().getString("user_surname") : "userSurname";
+
+        navUserEmail.setText(temp_user_email);
+        navUserName.setText(temp_user_name);
+        hello.setText("Hello "+temp_user_name +" " + temp_user_surname + "! Check app drawer");
+
     }
 
     @Override
