@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="student_objections" path="Android/data/bilkentcs492.aats/files/student_objections" />
+</paths>

@@ -8,14 +8,19 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,14 +30,24 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
-import static bilkentcs492.aats.ProfessorCourseViewFragment.GridViewClickListener.REQUEST_IMAGE_CAPTURE;
 
 
 /**
@@ -49,6 +64,14 @@ public class ProfessorCourseViewFragment extends Fragment {
     private EditText searchBar;
     private StudentsGridViewAdaptor adapter;
     private String student_objection_ID; // CURRENT STUDENT BEING MARKED AS PRESENT MANUALLY
+    public static final int CONNECTION_TIMEOUT = 10000;
+    public static final int READ_TIMEOUT = 15000;
+    String serverResponse;
+    ImageView test;
+    String objection_picture_path;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int BITMAP_SMALL_WIDTH = 1200;
+    private static final int BITMAP_SMALL_HEIGHT = 1600;
 
     public ProfessorCourseViewFragment() {
         // Required empty public constructor
@@ -168,24 +191,27 @@ public class ProfessorCourseViewFragment extends Fragment {
      *  when user taps on the image of a student they may choose to marke them present or not
      *  as per the students objection
      */
-    class GridViewClickListener implements AdapterView.OnItemClickListener{
+    class GridViewClickListener implements AdapterView.OnItemClickListener {
         Context context;
+        static final int REQUEST_TAKE_PHOTO = 1;
 
-        GridViewClickListener(Context cnt){
+
+        GridViewClickListener(Context cnt) {
             context = cnt;
         }
+
         @Override
         public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
             final String clicked_ID = studentList.get(position).getStudentID();
-             new AlertDialog.Builder(context)
+            new AlertDialog.Builder(context)
                     .setTitle("Mark Presence")
-                    .setMessage("Mark Student with id : "  + clicked_ID +" as ?")
+                    .setMessage("Mark Student with id : " + clicked_ID + " as ?")
 
                     // Specifying a listener allows you to take an action before dismissing the dialog.
                     // The dialog is automatically dismissed when a dialog button is clicked.
                     .setPositiveButton(R.string.present, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context,"Take a Picture", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Take a Picture", Toast.LENGTH_SHORT).show();
                             // take a picture here
                             student_objection_ID = clicked_ID;
                             dispatchTakePictureIntent();
@@ -194,7 +220,7 @@ public class ProfessorCourseViewFragment extends Fragment {
 
                     .setNegativeButton(R.string.absent, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context,"MARKED ABSENT", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "MARKED ABSENT", Toast.LENGTH_SHORT).show();
                         }
                     })
 
@@ -209,30 +235,214 @@ public class ProfessorCourseViewFragment extends Fragment {
 //            startActivity(intent,options.toBundle());
         }
 
-        static final int REQUEST_IMAGE_CAPTURE = 1;
 
-        public void dispatchTakePictureIntent() {
+        void dispatchTakePictureIntent() {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(context.getPackageManager()) != null) {
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile(student_objection_ID + "");
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    Uri photoURI = FileProvider.getUriForFile(rootView.getContext(),
+                            "bilkentcs492.aats",
+                            photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                }
             }
         }
-
-
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("_________ ERROR: "+resultCode,"Error " + requestCode);
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            Toast.makeText(getActivity(),"Picture taken and sent to server", Toast.LENGTH_SHORT).show();
 
-            // SEND BITMAP TO SERVER AND MARK STUDENT AS PRESENT ON SERVER SIDE THROUGH HERE
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(objection_picture_path, options);
 
-//                imageView.setImageBitmap(imageBitmap);
+            Toast.makeText(getActivity(),"Picture Taken Successfully!", Toast.LENGTH_SHORT).show();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            bitmap = scaleDownToRatio(bitmap);
+
+            bitmap = convert2Grayscale(bitmap);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream); //compress to which format you want.
+
+            byte [] byte_arr = stream.toByteArray();
+            final String image_str= new String(android.util.Base64.encode(byte_arr, android.util.Base64.DEFAULT));
+
+            // new thread because doing a HTTP request
+            Thread t = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    HttpURLConnection conn = null;
+                    URL url = null;
+
+                    try{
+                        try {
+                            // Enter URL address where your php file resides
+                            url = new URL("http://bilmenu.com/AATS/upload_image.php");
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                           Log.e(" ERROR: ","Error in URL "+e.toString());
+                        }
+                        try {
+                            // Setup HttpURLConnection class to send and receive data from php and mysql
+                            conn = (HttpURLConnection)url.openConnection();
+                            conn.setReadTimeout(READ_TIMEOUT);
+                            conn.setConnectTimeout(CONNECTION_TIMEOUT);
+                            conn.setRequestMethod("POST");
+
+                            // setDoInput and setDoOutput method depict handling of both send and receive
+                            conn.setDoInput(true);
+                            conn.setDoOutput(true);
+
+                            // Append parameters to URL
+                            Uri.Builder builder = new Uri.Builder().appendQueryParameter("image", image_str);
+                            builder.appendQueryParameter("filename",student_objection_ID +".jpg");
+                            String query = builder.build().getEncodedQuery();
+
+                            // Open connection for sending data
+                            OutputStream os = conn.getOutputStream();
+                            BufferedWriter writer = new BufferedWriter(
+                                    new OutputStreamWriter(os, "UTF-8"));
+                            writer.write(query);
+                            writer.flush();
+                            writer.close();
+                            os.close();
+                            conn.connect();
+                            Log.e(" connected here: ","blalba ");
+                        } catch (IOException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                            Log.e(" ERROR: ","Error in HTTP Conn "+e1.toString());
+                        }
+
+                        try {
+
+                            int response_code = conn.getResponseCode();
+                            Log.e(" rsponse here: ","r =  "+response_code);
+                            // Check if successful connection made
+                            if (response_code == HttpURLConnection.HTTP_OK) {
+
+                                // Read data sent from server
+                                InputStream input = conn.getInputStream();
+                                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                                StringBuilder result = new StringBuilder();
+                                String line;
+
+                                while ((line = reader.readLine()) != null) {
+                                    result.append(line);
+                                }
+
+                                // Pass data to onPostExecute method
+                                serverResponse = "";
+                                serverResponse = result.toString();
+
+                                if (serverResponse.equals("null")){
+                                    Log.e("ERROR : TRY AGAIN!:",serverResponse);
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getContext(), "ERROR UPLOADING:"+ serverResponse, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    conn.disconnect();
+                                }else{
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+
+                            }
+                            //return false;
+                        } catch (NullPointerException|IOException e) {
+                            e.printStackTrace();
+                            //return false;
+                        }
+
+                    }catch(final Exception e){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                        Log.e("CONNECTION ERROR: ","Error in http connection "+e.toString());
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t.start();
+
         }
+
     }
 
+    /**
+     *
+     * @return an Empty Image File Object with location and filename upon which we'll
+     * unleash our camera taken jpeg image
+     * taken picture
+     * @throws IOException
+     */
+    private File createImageFile(String imageFileName) throws IOException {
+        File storageDir = getContext().getExternalFilesDir("student_objections");
+        File image = new File(storageDir, imageFileName + ".jpg");
+
+        // createtempfile adds timestamp to file name - problem
+//        File image = File.createTempFile(
+//                imageFileName,  /* prefix */
+//                ".jpg",         /* suffix */
+//                storageDir      /* directory */
+//        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        objection_picture_path = image.getAbsolutePath();
+        return image;
+    }
+
+    /**
+     *
+     * @param bitmap : Original colored bitmap
+     * @return grayscale version of the original
+     */
+    private Bitmap convert2Grayscale(Bitmap bitmap){
+        Bitmap grayscale_btmp = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(grayscale_btmp);
+        Paint paint = new Paint();
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        ColorMatrixColorFilter colorMatrixFilter = new ColorMatrixColorFilter(colorMatrix);
+        paint.setColorFilter(colorMatrixFilter);
+        canvas.drawBitmap(bitmap, 0, 0, paint);
+        return grayscale_btmp;
+    }
+
+    /**
+     *
+     * @param bitmap : Original scale bitmap
+     * @return : New Bitmap scaled down to fixed smaller ration
+     */
+    private Bitmap scaleDownToRatio(Bitmap bitmap){
+        Matrix m = new Matrix();
+        m.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), new RectF(0, 0, BITMAP_SMALL_WIDTH, BITMAP_SMALL_HEIGHT), Matrix.ScaleToFit.CENTER);
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+    }
 }
