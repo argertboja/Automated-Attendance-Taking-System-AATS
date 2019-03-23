@@ -11,7 +11,6 @@ rects = multiprocessing.Queue()
 
 def threaded_faceDetector(img,up,left,rects):
     detector = dlib.get_frontal_face_detector()
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     dets = detector(img, 1)
     dets2 = []
     for i,r in enumerate(dets):
@@ -19,9 +18,8 @@ def threaded_faceDetector(img,up,left,rects):
         dets2.append(rect)
     rects.put(dets2)
    
-def detectFaces(picName,perMPfactor = 30):
+def detectFaces(img,perMPfactor = 30):
     
-    img = cv2.imread(picName)
     height,width,dimensions = img.shape
     extraAmount = height * width / 1000000 * perMPfactor
      
