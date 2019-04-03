@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity  {
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mIDView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mIDView = (AutoCompleteTextView) findViewById(R.id.id);
 
 //      add a button to skip loggin in
         Button hack_btn = findViewById(R.id.hack_button);
@@ -115,11 +115,11 @@ public class LoginActivity extends AppCompatActivity  {
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mIDView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String id = mIDView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -133,13 +133,9 @@ public class LoginActivity extends AppCompatActivity  {
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(id)) {
+            mIDView.setError(getString(R.string.error_field_required));
+            focusView = mIDView;
             cancel = true;
         }
 
@@ -151,7 +147,7 @@ public class LoginActivity extends AppCompatActivity  {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(id, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -209,17 +205,18 @@ public class LoginActivity extends AppCompatActivity  {
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String id;
         private final String mPassword;
         public static final int CONNECTION_TIMEOUT=10000;
         public static final int READ_TIMEOUT=15000;
         private String user_name ;
         private String user_surname;
         private String user_email;
-        private String user_position;
+        private String user_presence;
+        private String user_password;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        UserLoginTask(String id, String password) {
+            this.id = id;
             mPassword = password;
         }
 
@@ -241,7 +238,7 @@ public class LoginActivity extends AppCompatActivity  {
 //                    pieces[1].equals(mPassword);
 //                }
 //            }
-            return  authenticateUser(mEmail, mPassword);
+            return  authenticateUser(id, mPassword);
 
             // TODO: register the new account here.
 
@@ -256,10 +253,12 @@ public class LoginActivity extends AppCompatActivity  {
                 finish();
                 Intent login_success = new Intent(LoginActivity.this, MainActivity.class);
                 Bundle mBundle = new Bundle();
+                mBundle.putString("user_id", id);
+                mBundle.putString("user_password", user_password);
                 mBundle.putString("user_email", user_email);
                 mBundle.putString("user_name", user_name);
                 mBundle.putString("user_surname", user_surname);
-                mBundle.putString("user_position", user_position);
+                mBundle.putString("user_presence", user_presence);
                 login_success.putExtras(mBundle);
                 startActivity(login_success);
             } else {
@@ -274,14 +273,14 @@ public class LoginActivity extends AppCompatActivity  {
             showProgress(false);
         }
 
-        private boolean authenticateUser(String email, String password) {
+        private boolean authenticateUser(String id, String password) {
             HttpURLConnection conn;
             URL url = null;
 
             try {
 
                 // Enter URL address where your php file resides
-                url = new URL("http://bilmenu.com/AATS/login.php");
+                url = new URL("http://accentjanitorial.com/accentjanitorial.com/aats_admin/login.php");
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -301,7 +300,7 @@ public class LoginActivity extends AppCompatActivity  {
 
                 // Append parameters to URL
                 Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("email", email)
+                        .appendQueryParameter("ID", id)
                         .appendQueryParameter("password", password);
                 String query = builder.build().getEncodedQuery();
 
@@ -322,7 +321,6 @@ public class LoginActivity extends AppCompatActivity  {
             }
 
             try {
-
                 int response_code = conn.getResponseCode();
 
                 // Check if successful connection made
@@ -337,7 +335,9 @@ public class LoginActivity extends AppCompatActivity  {
                     while ((line = reader.readLine()) != null) {
                         result.append(line);
                     }
-
+                    Log.d("ERROR : ", "OK AHTTP");
+                    Log.d("ERROR : ", "OK AHTTP");
+                    Log.d("ERROR : ", "OK AHTTP");
                     // Pass data to onPostExecute method
                     String outputData = null;
                     outputData = result.toString();
@@ -351,17 +351,21 @@ public class LoginActivity extends AppCompatActivity  {
                             JSONArray jArray = new JSONArray(outputData);
                             for (int i = 0; i < jArray.length(); i++) {
                                 JSONObject json_data = jArray.getJSONObject(i);
-                                Log.i("log_tag", "id: " + json_data.getInt("id") +
+                                Log.i("log_tag", "id: " + json_data.getInt("ID") +
                                         ", name: " + json_data.getString("name") +
                                         ", surname: " + json_data.getString("surname") +
                                         ", email: " + json_data.getString("email") +
-                                        ", position: " + json_data.getString("position")
+                                        ", present: " + json_data.getString("present")
                                 );
                                 user_name = json_data.getString("name");
                                 user_surname = json_data.getString("surname");
                                 user_email = json_data.getString("email");
-                                user_position = json_data.getString("position");
-
+                                user_password = json_data.getString("password");
+                                if (!json_data.getString("present").equals("-1")) {
+                                    user_presence = json_data.getString("present");
+                                }else{
+                                    user_presence = "-1"; // user is professor, no presence
+                                }
                             }
                             return true;
                         } catch (JSONException e) {
@@ -370,6 +374,9 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     }
                 }
+                Log.d("ERROR : ", "FALSE AHTTP");
+                Log.d("ERROR : ", "FALSE AHTTP");
+                Log.d("ERROR : ", "FALSE AHTTP");
                 return false;
             } catch (IOException e) {
                 e.printStackTrace();

@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -84,6 +85,10 @@ public class ProfessorCourseViewFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView =  (View) inflater.inflate(R.layout.fragment_professor_course_view, container, false);
         searchBar = (EditText) rootView.findViewById(R.id.search_bar) ;
+        TextView courseID = rootView.findViewById(R.id.course_ID);
+        if (getArguments() != null) {
+            courseID.setText(getArguments().getString("user_id"));
+        }
         gridView = (GridView) rootView.findViewById(R.id.grid_view);
         studentList = getStudentData(new ArrayList<Student> ());
         adapter = new StudentsGridViewAdaptor(getActivity(), R.layout.grid_item_layout,studentList );
@@ -293,7 +298,7 @@ public class ProfessorCourseViewFragment extends Fragment {
                     try{
                         try {
                             // Enter URL address where your php file resides
-                            url = new URL("http://bilmenu.com/AATS/upload_image.php");
+                            url = new URL("http://accentjanitorial.com/accentjanitorial.com/aats_admin/upload_image.php");
                         } catch (MalformedURLException e) {
                             e.printStackTrace();
                            Log.e(" ERROR: ","Error in URL "+e.toString());
