@@ -280,7 +280,8 @@ public class ProfessorCourseViewFragment extends Fragment {
 
             bitmap = scaleDownToRatio(bitmap);
 
-            bitmap = convert2Grayscale(bitmap);
+
+            //bitmap = convert2Grayscale(bitmap);
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream); //compress to which format you want.
 
