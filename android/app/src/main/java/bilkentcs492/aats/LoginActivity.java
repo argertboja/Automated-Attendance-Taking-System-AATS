@@ -205,7 +205,7 @@ public class LoginActivity extends AppCompatActivity  {
         private String user_email;
         private String user_presence;
         private String user_password;
-        private String URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/login.php";
+        private String URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/login.php";
 
         UserLoginTask(String id, String password) {
             this.id = id;
