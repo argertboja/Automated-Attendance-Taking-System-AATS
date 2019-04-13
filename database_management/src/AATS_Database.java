@@ -19,6 +19,7 @@ public class AATS_Database {
 			stmt.execute("DROP VIEW IF EXISTS professor_course");
 			stmt.execute("DROP VIEW IF EXISTS students_of_course");
 			stmt.execute("DROP VIEW IF EXISTS students_in_class");
+			stmt.execute("DROP VIEW IF EXISTS class_of_professor_in_time");
 			
 			// Drop function
 			stmt.execute("DROP FUNCTION IF EXISTS check_if_professor");
@@ -130,6 +131,14 @@ public class AATS_Database {
 																"FROM students JOIN classes JOIN lectures "+
 																"WHERE students.ID = lectures.studentID "+
 																"AND classes.ID = lectures.classID");
+			
+			// create view for students present in class
+			stmt.execute("CREATE VIEW class_of_professor_in_time AS SELECT lectures.professorID AS professorID, "+
+																"classes.classID AS classID, "+
+																"classes.day AS day, "+
+																"classes.time AS time "+
+																"FROM classes JOIN lectures "+
+																"WHERE classes.ID = lectures.classID");
 						
 			// QUERIES
 			// Return name surname after user provides username and pasw
@@ -172,7 +181,13 @@ public class AATS_Database {
 			System.out.println("Return students IDs and their facevector for specific course and time : ");
 			rs = stmt.executeQuery("SELECT studentID, facevector from students_in_class WHERE classID = '1' AND day='Tuesday' AND time='1540-1630'");
 			while (rs.next())
-				System.out.println(rs.getString(1));					
+				System.out.println(rs.getString(1));	
+			
+			// Return if student is present or not
+			System.out.println("Return class from professor id and time : ");
+			rs = stmt.executeQuery("SELECT DISTINCT classID from class_of_professor_in_time where professorID = '4' AND day='Tuesday' AND time='1540-1630'");
+			while (rs.next())
+				System.out.println(rs.getString(1));
 					
 			// Update attendance
 			System.out.println("Update attendance of student provided ID of student professor and course: ");
