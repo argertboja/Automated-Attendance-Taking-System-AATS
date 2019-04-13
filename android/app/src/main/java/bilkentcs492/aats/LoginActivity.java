@@ -18,6 +18,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -278,22 +279,41 @@ public class LoginActivity extends AppCompatActivity  {
             params.add(new QueryParameter("password",password ));
             authenticateRequest.setParams(params);
 
-            JSONArray receiveData = authenticateRequest.requestAndFetch();
+            JSONArray receiveData = authenticateRequest.requestAndFetch(LoginActivity.this);
+            if(receiveData != null) {
+                JSONObject json_data = null;
+                String auth_result = "";
+                try {
+                    json_data = receiveData.getJSONObject(0);
 
-            if(receiveData == null){
-                return false; // authentication failed
-            }else{
-                for (int i = 0; i < receiveData.length(); i++) {
-                    JSONObject json_data = null;
+                    if (json_data.optString("response") == null) {
+                        Log.e("HELLOO--", json_data.optString("response"));
+                    } else {
+                        auth_result = json_data.optString("response");
+                    }
+                } catch (final JSONException e) {
+                    //LOG ERROR
+                    Log.e("JSONException:AUTH_MSG", "Error with JSON parsing RESPONSE");
+                    e.printStackTrace();
+                    LoginActivity.this.runOnUiThread(new Runnable() {
+                       @Override
+                        public void run() {
+                            Toast.makeText( LoginActivity.this, "JSONException: Error parsing JSON"+ e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    return false;
+                }
+                if (auth_result.equals("AUTH_FAILED")) {
+                    Log.e("not AUTHENTICATED", "wrong credentials");
+                    LoginActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText( LoginActivity.this, "WRONG CREDENTIALS", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    return false; // authentication failed
+                } else {
                     try {
-                        json_data = receiveData.getJSONObject(i);
-                        // Log data for testing purpose
-                        Log.i("log_tag", "id: " + json_data.getInt("ID") +
-                                ", name: " + json_data.getString("name") +
-                                ", surname: " + json_data.getString("surname") +
-                                ", email: " + json_data.getString("email") +
-                                ", present: " + json_data.getString("present")
-                        );
 
                         // assign data to varables
                         user_name = json_data.getString("name");
@@ -302,16 +322,29 @@ public class LoginActivity extends AppCompatActivity  {
                         user_password = json_data.getString("password");
                         if (!json_data.getString("present").equals("-1")) {
                             user_presence = json_data.getString("present");
-                        }else{
+                        } else {
                             user_presence = "-1"; // user is professor, no presence
                         }
                         return true;
-                    } catch (JSONException e) {
-                        Log.e("JSONException: ","Error with JSON parsing");
+                    } catch (final JSONException e) {
+                        Log.e("JSONException: ", "Error with JSON parsing");
                         e.printStackTrace();
+                        LoginActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText( LoginActivity.this, "JSONException" + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                         return false;
                     }
                 }
+            }else{
+                LoginActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText( LoginActivity.this, "SERVER CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                    }
+                });
                 return false;
             }
         }

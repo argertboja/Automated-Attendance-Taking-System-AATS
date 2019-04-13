@@ -1,5 +1,17 @@
 <?php
-//$connection = mysqli_connect("pdb23.awardspace.net","2495132_aats","%&uM7sU28jt");
+if (isset($argc)) {
+	for ($i = 0; $i < $argc; $i++) {
+		if($i == 1){
+			$user_ID = (int)$argv[$i];
+		}else if($i == 2 ){
+			$user_password =  $argv[$i];
+		}
+	}
+}else{
+	$user_ID 		= (int)$_REQUEST['ID'];
+	$user_password 	= $_REQUEST['password'];
+}
+
 $connection = mysqli_connect("160.153.75.104","aats_admin","aats_admin123");
 
 if (mysqli_connect_errno())
@@ -7,12 +19,14 @@ if (mysqli_connect_errno())
    echo "Failed to connect to MySQL: " . mysqli_connect_error();
   }
 
+// echo  "example";
 mysqli_select_db($connection,"AATS_Database");
-$user_ID 		= (int)$_REQUEST['ID'];
-$user_password 	= $_REQUEST['password'];
 
-// $user_ID 		= 1;
-// $user_password 	= 'selim1234';
+
+// create failure json message
+$AUTH_FAILED = array();
+$tmp["response"] 	= "AUTH_FAILED";		
+array_push($AUTH_FAILED,$tmp);
 
 $stmt_s = $connection->prepare("SELECT * FROM students WHERE ID = ? AND password = ? ; ");
 if( !$stmt_s){ 	print("FAILED TO PREPARE STUDENT STMT :: "); } else{	$stmt_s->bind_param("is",  $user_ID, $user_password); }
@@ -24,20 +38,19 @@ if( !$stmt_p){	print("FAILED TO PREPARE PROFESSOR STMT:: "); }else{	$stmt_p->bin
 $isStudent = check_if_student($user_ID , $connection);
 $isProfessor = check_if_professor($user_ID , $connection);
 
-
 //Authentication process
 if($isProfessor){
 	$output_result = returnProfessorData($connection, $stmt_p);
 	if ($output_result != -1){
-		print(json_encode($output_result));
-	}else { print("null"); /*print(":: Authentication Failed"); */ }
+		print(json_encode($output_result)); 
+	}else { print(json_encode($AUTH_FAILED)); /*print(":: Authentication Failed"); */ }
 }else if($isStudent){
 	$output_result = returnStudentData($connection, $stmt_s);
 	if ($output_result != -1){
 		print(json_encode($output_result));
-	}else {print("null"); /* print(":: Authentication Failed");*/}
+	}else {print(json_encode($AUTH_FAILED)); /* print(":: Authentication Failed");*/}
 }else{
-	print("null");
+	print(json_encode($AUTH_FAILED));
 	// print ("AUTH_FAILED:: USER WITH THAT ID DOES NOT EXIST");
 }
         
@@ -61,13 +74,13 @@ $stmt = $connection->prepare("select check_if_professor( ? ) AS result");
 		}	
 
 		if ( (int)$output[0]["result"] == 1 ){  	return true;   }
-	}else{ return false; print("null"); /*print("ERROR FETCHING - CHECK STUDENT");*/}
+	}else{ return false; print(json_encode($AUTH_FAILED)); /*print("ERROR FETCHING - CHECK STUDENT");*/}
 }
 
 //function returns true if user with this id is a student
 function check_if_student($id , $connection ) {
 	$stmt = $connection->prepare("select check_if_student( ? ) AS result");
-	if( !$stmt){ 	print("null"); /*print("FAILED TO PREPARE CHECK STUDENT STMT :: ");*/ } else{	$stmt->bind_param("i",  $id); }
+	if( !$stmt){ print(json_encode($AUTH_FAILED)); /*print("FAILED TO PREPARE CHECK STUDENT STMT :: ");*/ } else{	$stmt->bind_param("i",  $id); }
 
 	$stmt->execute();
 	$output = array();
@@ -79,7 +92,7 @@ function check_if_student($id , $connection ) {
 			array_push($output, $tmp);
 		}	
 		if ( (int)$output[0]["result"] == 1 ){  	return true;   }
-	}else{ return false; print("null");/*print("ERROR FETCHING - CHECK STUDENT");*/}
+	}else{ return false; print(json_encode($AUTH_FAILED));/*print("ERROR FETCHING - CHECK STUDENT");*/}
 
 }
 
@@ -105,7 +118,7 @@ function returnStudentData($connection, $stmt){
 			return -1;
 		}
 	 	return $output;
-	}else{	print("null");/*print("query failed at run_query() student :: ");*/  return -1; }
+	}else{	print(json_encode($AUTH_FAILED));/*print("query failed at run_query() student :: ");*/  return -1; }
 }
 
 // function takes connection object, query and returns result or -1 if something goes wrong
@@ -131,7 +144,7 @@ function returnProfessorData($connection, $stmt){
 	 	// print (($output));
 	 	
 		return $output;
-	}else{ print("null");	/*print("query failed at run_query() professor :: "); */ return -1; }
+	}else{ print(json_encode($AUTH_FAILED));	/*print("query failed at run_query() professor :: "); */ return -1; }
 }
 mysqli_close($connection);
 
