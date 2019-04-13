@@ -342,7 +342,7 @@ public class LoginActivity extends AppCompatActivity  {
                 LoginActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText( LoginActivity.this, "SERVER CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                        Toast.makeText( LoginActivity.this, "INTERNET CONNECTION ERROR" , Toast.LENGTH_LONG).show();
                     }
                 });
                 return false;

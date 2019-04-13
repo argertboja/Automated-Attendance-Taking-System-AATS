@@ -15,8 +15,8 @@ $ID = (string)$_REQUEST['ID'];
 $password = $_REQUEST['password'];
 $professorID = (int) $ID;
 
-if( !(attempt_authentication($ID, $password)  == "AUTH_FAILED") ){ // IF auth does not fail, it succeeds, then proceed as usual 
-
+$auth_response = attempt_authentication($ID, $password);
+if($auth_response  == "AUTH_SUCCESS"){
 		// set timezone to istanbul to receive current time ( to be exctended to other countries in the future)
 		date_default_timezone_set('Europe/Istanbul');
 		$parentPath = "/home/accentjanitorial/public_html/accentjanitorial.com/aats_admin/images/";
@@ -64,7 +64,7 @@ if( !(attempt_authentication($ID, $password)  == "AUTH_FAILED") ){ // IF auth do
 	 	}else{
 	 		 print(json_encode($NO_DATA));
 	 	}
-}else{
+}else if ($auth_response  == "AUTH_FAILED"){
 	print(json_encode($AUTH_FAILED));
 }
 

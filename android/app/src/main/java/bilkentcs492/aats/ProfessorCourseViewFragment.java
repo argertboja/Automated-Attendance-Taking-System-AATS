@@ -342,7 +342,7 @@ public class ProfessorCourseViewFragment extends Fragment {
                     params.add(new QueryParameter("password",professorPassword ));
                     Log.e("pasw: " , professorId +"_" +professorPassword);
                     params.add(new QueryParameter("image",image_str ));
-                    params.add(new QueryParameter("filename","images/"+student_objection_ID + ".jpg" ));
+                    params.add(new QueryParameter("filename",""+student_objection_ID + ".jpg" ));
                     uploadRequest.setParams(params);
 
                     JSONArray receiveResponse = uploadRequest.requestAndFetch(getActivity());
@@ -383,7 +383,7 @@ public class ProfessorCourseViewFragment extends Fragment {
                         Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText( getActivity(), "SERVER CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                                Toast.makeText( getActivity(), "INTERNET CONNECTION ERROR" , Toast.LENGTH_LONG).show();
                             }
                         });
                     }

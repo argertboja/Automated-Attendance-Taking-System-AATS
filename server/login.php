@@ -25,14 +25,14 @@ mysqli_select_db($connection,"AATS_Database");
 
 // create failure json message
 $AUTH_FAILED = array();
-$tmp["response"] 	= "AUTH_FAILED";		
+$tmp["response"] 	= "AUTH_FAILED";
 array_push($AUTH_FAILED,$tmp);
 
 $stmt_s = $connection->prepare("SELECT * FROM students WHERE ID = ? AND password = ? ; ");
-if( !$stmt_s){ 	print("FAILED TO PREPARE STUDENT STMT :: "); } else{	$stmt_s->bind_param("is",  $user_ID, $user_password); }
+if( !$stmt_s){ print(json_encode($AUTH_FAILED)); } else{	$stmt_s->bind_param("is",  $user_ID, $user_password); }
 
 $stmt_p = $connection->prepare("SELECT * FROM professors WHERE ID = ? AND password = ? ; ");
-if( !$stmt_p){	print("FAILED TO PREPARE PROFESSOR STMT:: "); }else{	$stmt_p->bind_param("is",  $user_ID, $user_password); }
+if( !$stmt_p){	print(json_encode($AUTH_FAILED)); }else{	$stmt_p->bind_param("is",  $user_ID, $user_password); }
 
 
 $isStudent = check_if_student($user_ID , $connection);
@@ -61,7 +61,7 @@ if($isProfessor){
 //function returns true if user with this id is a professor
 function check_if_professor($id , $connection ) {
 $stmt = $connection->prepare("select check_if_professor( ? ) AS result");
-	if( !$stmt){ 	print("null");/*print("FAILED TO PREPARE CHECK professor STMT :: ");*/ } else{	$stmt->bind_param("i",  $id); }
+	if( !$stmt){ 	print(json_encode($AUTH_FAILED));/*print("FAILED TO PREPARE CHECK professor STMT :: ");*/ } else{	$stmt->bind_param("i",  $id); }
 
 	$stmt->execute();
 	$output = array();
@@ -74,7 +74,7 @@ $stmt = $connection->prepare("select check_if_professor( ? ) AS result");
 		}	
 
 		if ( (int)$output[0]["result"] == 1 ){  	return true;   }
-	}else{ return false; print(json_encode($AUTH_FAILED)); /*print("ERROR FETCHING - CHECK STUDENT");*/}
+	}else{ return false;  /*print("ERROR FETCHING - CHECK STUDENT");*/}
 }
 
 //function returns true if user with this id is a student
@@ -92,13 +92,14 @@ function check_if_student($id , $connection ) {
 			array_push($output, $tmp);
 		}	
 		if ( (int)$output[0]["result"] == 1 ){  	return true;   }
-	}else{ return false; print(json_encode($AUTH_FAILED));/*print("ERROR FETCHING - CHECK STUDENT");*/}
+	}else{ return false; /*print("ERROR FETCHING - CHECK STUDENT");*/}
 
 }
 
 
 // function takes connection object, query and returns result or -1 if something goes wrong
 function returnStudentData($connection, $stmt){
+	global $AUTH_FAILED;
 	$stmt->execute();
 	$output = array();
 	$result = $stmt->bind_result($id, $name, $surname, $email, $password, $facevector, $present);
@@ -115,6 +116,7 @@ function returnStudentData($connection, $stmt){
 			array_push($output, $tmp);
 		}		
 		if( empty($output)) {
+			// print(json_encode($AUTH_FAILED));
 			return -1;
 		}
 	 	return $output;
@@ -123,6 +125,7 @@ function returnStudentData($connection, $stmt){
 
 // function takes connection object, query and returns result or -1 if something goes wrong
 function returnProfessorData($connection, $stmt){
+	global $AUTH_FAILED;
 	$stmt->execute();
 	$output = array();
 	$result = $stmt->bind_result($id, $name, $surname, $email, $password);
@@ -138,14 +141,16 @@ function returnProfessorData($connection, $stmt){
 			array_push($output, $tmp);
 		}		
 		
-		if( empty($output)) {
+		if( empty($output) ) {
+			// print(json_encode($AUTH_FAILED));
 			return -1;
 		}
 	 	// print (($output));
 	 	
 		return $output;
-	}else{ print(json_encode($AUTH_FAILED));	/*print("query failed at run_query() professor :: "); */ return -1; }
+	}else{ print(json_encode($AUTH_FAILED));  return -1; }
 }
+
 mysqli_close($connection);
 
 ?>

@@ -5,17 +5,21 @@ $AUTH_FAILED = array();
 $tmp["response"] 	= "AUTH_FAILED";		
 array_push($AUTH_FAILED,$tmp);
 
+$AUTH_SUCCESS = array();
+$tmp["response"] 	= "AUTH_FAILED";		
+array_push($AUTH_SUCCESS,$tmp);
+
 $EMPTY = array();
-$tmp["response"] 	= "NO_DATA";		
-array_push($$EMPTY,$tmp);
+$tmp["response"] = "NO_DATA";		
+array_push($EMPTY,$tmp);
 
 $UPLOAD_AUTH = array();
 $tmp["response"] 	= "NO_PERMISSION_TO_UPLOAD";		
-array_push($$UPLOAD_AUTH,$tmp);
+array_push($UPLOAD_AUTH,$tmp);
 
 $UPLOAD_SUCCESS = array();
 $tmp["response"] 	= "IMAGE UPLOADED SUCCESSFULLY!";		
-array_push($$UPLOAD_SUCCESS,$tmp);
+array_push($UPLOAD_SUCCESS,$tmp);
 
 
 // authenticate
@@ -25,10 +29,20 @@ function attempt_authentication($ID, $password){
 	$authentication_result =  exec($path);
 
 	$authentication_result = json_decode($authentication_result, true);
-
-	$authentication_result =  $authentication_result[0]["response"];
 	
-	return $authentication_result;
+	$value = isset($authentication_result[0]["response"]) ? "AUTH_FAILED" : "AUTH_SUCCESS";
+	return $value;
+	// if(!$authentication_result ){
+	// 	$authentication_result = $authentication_result[0]["ID"];
+	// 	echo $authentication_result[0]["ID"];
+	// 	if($ID == $authentication_result){
+	// 		return "AUTH_SUCCESS";
+	// 	}
+	// }else if ($authentication_result[0]["response"]){
+	// 	$authentication_result =  $authentication_result[0]["response"];
+	// 	return $authentication_result;
+	// }
+	
 }
 
 function getCLassTime(){
