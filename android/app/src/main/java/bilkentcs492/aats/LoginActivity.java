@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,16 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A login screen that offers login via email/password.
@@ -214,6 +205,7 @@ public class LoginActivity extends AppCompatActivity  {
         private String user_email;
         private String user_presence;
         private String user_password;
+        private String URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/login.php";
 
         UserLoginTask(String id, String password) {
             this.id = id;
@@ -273,116 +265,55 @@ public class LoginActivity extends AppCompatActivity  {
             showProgress(false);
         }
 
+        // make server request for authentication, receive data and add it to variable
         private boolean authenticateUser(String id, String password) {
-            HttpURLConnection conn;
-            URL url = null;
 
-            try {
+            ServerRequest authenticateRequest = new ServerRequest();
+            // set URL
+            authenticateRequest.setURL(URL);
 
-                // Enter URL address where your php file resides
-                url = new URL("http://accentjanitorial.com/accentjanitorial.com/aats_admin/login.php");
+            // set Parameters .. ex: ?id=1
+            List<QueryParameter> params = new ArrayList<>();
+            params.add(new QueryParameter("ID",id ));
+            params.add(new QueryParameter("password",password ));
+            authenticateRequest.setParams(params);
 
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return false;
-            }
-            try {
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection)url.openConnection();
-                conn.setReadTimeout(READ_TIMEOUT);
-                conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                conn.setRequestMethod("POST");
+            JSONArray receiveData = authenticateRequest.requestAndFetch();
 
-                // setDoInput and setDoOutput method depict handling of both send and receive
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
+            if(receiveData == null){
+                return false; // authentication failed
+            }else{
+                for (int i = 0; i < receiveData.length(); i++) {
+                    JSONObject json_data = null;
+                    try {
+                        json_data = receiveData.getJSONObject(i);
+                        // Log data for testing purpose
+                        Log.i("log_tag", "id: " + json_data.getInt("ID") +
+                                ", name: " + json_data.getString("name") +
+                                ", surname: " + json_data.getString("surname") +
+                                ", email: " + json_data.getString("email") +
+                                ", present: " + json_data.getString("present")
+                        );
 
-                // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("ID", id)
-                        .appendQueryParameter("password", password);
-                String query = builder.build().getEncodedQuery();
-
-                // Open connection for sending data
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                conn.connect();
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return false;
-            }
-
-            try {
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-                    Log.d("ERROR : ", "OK AHTTP");
-                    Log.d("ERROR : ", "OK AHTTP");
-                    Log.d("ERROR : ", "OK AHTTP");
-                    // Pass data to onPostExecute method
-                    String outputData = null;
-                    outputData = result.toString();
-
-                    if (outputData.equals("null")){
-                        Log.e("authenticated respomse:",outputData);
-                        conn.disconnect();
-                        return false;
-                    }else {
-                        try {
-                            JSONArray jArray = new JSONArray(outputData);
-                            for (int i = 0; i < jArray.length(); i++) {
-                                JSONObject json_data = jArray.getJSONObject(i);
-                                Log.i("log_tag", "id: " + json_data.getInt("ID") +
-                                        ", name: " + json_data.getString("name") +
-                                        ", surname: " + json_data.getString("surname") +
-                                        ", email: " + json_data.getString("email") +
-                                        ", present: " + json_data.getString("present")
-                                );
-                                user_name = json_data.getString("name");
-                                user_surname = json_data.getString("surname");
-                                user_email = json_data.getString("email");
-                                user_password = json_data.getString("password");
-                                if (!json_data.getString("present").equals("-1")) {
-                                    user_presence = json_data.getString("present");
-                                }else{
-                                    user_presence = "-1"; // user is professor, no presence
-                                }
-                            }
-                            return true;
-                        } catch (JSONException e) {
-                            Log.e("log_tag", "Error parsing data " + e.toString());
-                            return false;
+                        // assign data to varables
+                        user_name = json_data.getString("name");
+                        user_surname = json_data.getString("surname");
+                        user_email = json_data.getString("email");
+                        user_password = json_data.getString("password");
+                        if (!json_data.getString("present").equals("-1")) {
+                            user_presence = json_data.getString("present");
+                        }else{
+                            user_presence = "-1"; // user is professor, no presence
                         }
+                        return true;
+                    } catch (JSONException e) {
+                        Log.e("JSONException: ","Error with JSON parsing");
+                        e.printStackTrace();
+                        return false;
                     }
                 }
-                Log.d("ERROR : ", "FALSE AHTTP");
-                Log.d("ERROR : ", "FALSE AHTTP");
-                Log.d("ERROR : ", "FALSE AHTTP");
-                return false;
-            } catch (IOException e) {
-                e.printStackTrace();
                 return false;
             }
-
         }
     }
 }
