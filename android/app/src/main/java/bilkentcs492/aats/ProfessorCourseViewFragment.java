@@ -34,19 +34,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -73,7 +66,7 @@ public class ProfessorCourseViewFragment extends Fragment {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final int BITMAP_SMALL_WIDTH = 1200;
     private static final int BITMAP_SMALL_HEIGHT = 1600;
-
+    private final String UPLOAD_URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/upload_image.php";
     public ProfessorCourseViewFragment() {
         // Required empty public constructor
     }
@@ -293,106 +286,19 @@ public class ProfessorCourseViewFragment extends Fragment {
 
                 @Override
                 public void run() {
-                    HttpURLConnection conn = null;
-                    URL url = null;
 
-                    try{
-                        try {
-                            // Enter URL address where your php file resides
-                            url = new URL("http://accentjanitorial.com/accentjanitorial.com/aats_admin/upload_image.php");
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                           Log.e(" ERROR: ","Error in URL "+e.toString());
-                        }
-                        try {
-                            // Setup HttpURLConnection class to send and receive data from php and mysql
-                            conn = (HttpURLConnection)url.openConnection();
-                            conn.setReadTimeout(READ_TIMEOUT);
-                            conn.setConnectTimeout(CONNECTION_TIMEOUT);
-                            conn.setRequestMethod("POST");
+                    ServerRequest uploadRequest = new ServerRequest();
+                    // set URL
+                    uploadRequest.setURL(UPLOAD_URL);
 
-                            // setDoInput and setDoOutput method depict handling of both send and receive
-                            conn.setDoInput(true);
-                            conn.setDoOutput(true);
+                    // set Parameters .. ex: ?id=1
+                    List<QueryParameter> params = new ArrayList<>();
+                    params.add(new QueryParameter("image",image_str ));
+                    params.add(new QueryParameter("filename",student_objection_ID + ".jpg" ));
+                    uploadRequest.setParams(params);
 
-                            // Append parameters to URL
-                            Uri.Builder builder = new Uri.Builder().appendQueryParameter("image", image_str);
-                            builder.appendQueryParameter("filename",student_objection_ID +".jpg");
-                            String query = builder.build().getEncodedQuery();
+                    uploadRequest.uploadRequest(getActivity());
 
-                            // Open connection for sending data
-                            OutputStream os = conn.getOutputStream();
-                            BufferedWriter writer = new BufferedWriter(
-                                    new OutputStreamWriter(os, "UTF-8"));
-                            writer.write(query);
-                            writer.flush();
-                            writer.close();
-                            os.close();
-                            conn.connect();
-                            Log.e(" connected here: ","blalba ");
-                        } catch (IOException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                            Log.e(" ERROR: ","Error in HTTP Conn "+e1.toString());
-                        }
-
-                        try {
-
-                            int response_code = conn.getResponseCode();
-                            Log.e(" rsponse here: ","r =  "+response_code);
-                            // Check if successful connection made
-                            if (response_code == HttpURLConnection.HTTP_OK) {
-
-                                // Read data sent from server
-                                InputStream input = conn.getInputStream();
-                                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                                StringBuilder result = new StringBuilder();
-                                String line;
-
-                                while ((line = reader.readLine()) != null) {
-                                    result.append(line);
-                                }
-
-                                // Pass data to onPostExecute method
-                                serverResponse = "";
-                                serverResponse = result.toString();
-
-                                if (serverResponse.equals("null")){
-                                    Log.e("ERROR : TRY AGAIN!:",serverResponse);
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getContext(), "ERROR UPLOADING:"+ serverResponse, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    conn.disconnect();
-                                }else{
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getContext(), serverResponse, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                }
-
-                            }
-                            //return false;
-                        } catch (NullPointerException|IOException e) {
-                            e.printStackTrace();
-                            //return false;
-                        }
-
-                    }catch(final Exception e){
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getContext(), "ERROR: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                        Log.e("CONNECTION ERROR: ","Error in http connection "+e.toString());
-                        e.printStackTrace();
-                    }
                 }
             });
             t.start();
