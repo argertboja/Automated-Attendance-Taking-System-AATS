@@ -51,7 +51,8 @@ public class ProfessorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_professor);
 
-        Professor professor  = (Professor) getIntent().getExtras().getParcelable("ProfessorData");
+        Professor professor  = (Professor) getIntent().getExtras().getSerializable("ProfessorData");;
+
         if(professor == null){
             Log.e("NULL","nullllll");
         }
@@ -70,10 +71,11 @@ public class ProfessorActivity extends AppCompatActivity {
             Log.e("NULL","");
         }
         Log.e("balueeee",""+professor.getCurrentCourse());
-
-        adapter = new StudentsGridViewAdaptor(ProfessorActivity.this, R.layout.grid_item_layout ,professor.getListOfCurrentStudents());
+        ArrayList<ImageItem> items = professor.getListOfCurrentStudents();
+        Log.e("size--=",""+items.size());
+        adapter = new StudentsGridViewAdaptor(ProfessorActivity.this, R.layout.grid_item_layout ,items);
         gridView.setOnItemClickListener(new GridViewClickListener(ProfessorActivity.this));
-
+        gridView.setAdapter(adapter);
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -92,11 +94,11 @@ public class ProfessorActivity extends AppCompatActivity {
         });
 
         courseID.setText(professor.getCurrentCourse());
-//        presentNum.setText(professor.getNum_present_students());
-//        absentNum.setText(professor.getNum_absent_students());
-//        totalNum.setText(professor.getNum_total_students());
-//        String percentage = professor.getAttendance_percentage()+"";
-//        percentage_num.setText(percentage);
+        presentNum.setText(professor.getNum_present_students()+"");
+        absentNum.setText(professor.getNum_absent_students()+"");
+        totalNum.setText(professor.getNum_total_students()+"");
+        String percentage = professor.getAttendance_percentage()+"";
+        percentage_num.setText(percentage);
 
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);

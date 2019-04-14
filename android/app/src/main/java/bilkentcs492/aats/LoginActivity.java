@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -282,9 +283,10 @@ public class LoginActivity extends AppCompatActivity  {
                     json_data = receiveData.getJSONObject(0);
 
                     if (json_data.optString("response") == null) {
-//                        Log.e("HELLOO--", json_data.optString("response"));
+                        Log.e("HELLOO--", json_data.optString("response"));
                     } else {
                         auth_result = json_data.optString("response");
+                        Log.e("HELLOO--", auth_result);
                     }
                 } catch (final JSONException e) {
 //                    Log.e("JSONException:AUTH_MSG", "Error with JSON parsing RESPONSE");
@@ -348,7 +350,7 @@ public class LoginActivity extends AppCompatActivity  {
                 LoginActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText( LoginActivity.this, "INTERNET CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                        Toast.makeText( LoginActivity.this, "INTERNET CONNECTION ERROR-1" , Toast.LENGTH_LONG).show();
                     }
                 });
                 return false;

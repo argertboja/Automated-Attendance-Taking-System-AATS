@@ -174,7 +174,7 @@ public class ProfessorCourseViewFragment extends Fragment {
 
                                     decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
                                     decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
-                                    imageItems.add(new ImageItem(decodedBitmap, studentID, false));
+                                    imageItems.add(new ImageItem(base64, studentID, false));
                                 } catch (JSONException e) {
                                     Log.e("JSONException", "Error Parsing Student Data");
                                     Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {

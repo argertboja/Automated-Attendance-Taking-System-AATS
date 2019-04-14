@@ -1,8 +1,6 @@
 package bilkentcs492.aats;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -13,35 +11,46 @@ import java.util.ArrayList;
  * Package name: bilkentcs492.aats
  * ALWAYS AIMING HIGH :D
  */
-public class Professor  extends User implements Parcelable {
+public class Professor  extends User implements Serializable {
 
     private String currentCourse;
-    private ArrayList listOfCurrentStudents;
+//    private ArrayList listOfCurrentStudents;
     private int num_present_students;
     private int num_absent_students;
     private int num_total_students;
     private double attendance_percentage;
+    private ArrayList<ImageItem> listOfCurrentStudents;
+
+    Professor(String user_ID,String user_password,String user_name,String user_surname,String user_email, ArrayList<ImageItem> listOfCurrentStudents  ){
+        super(user_ID,user_password,user_name,user_surname,user_email);
+//        listOfCurrentStudents = new ArrayList<>();
+        this.listOfCurrentStudents = listOfCurrentStudents;
+    }
+
 
     Professor(String user_ID,String user_password,String user_name,String user_surname,String user_email  ){
         super(user_ID,user_password,user_name,user_surname,user_email);
+//        listOfCurrentStudents = new ArrayList<>();
     }
 
-    Professor(Parcel in){
-        this.currentCourse = in.readString();
-        this.num_present_students = in.readInt();
-        this.num_absent_students = in.readInt();
-        this.num_total_students = in.readInt();
-        this.attendance_percentage = in.readDouble();
-        this.listOfCurrentStudents = in.readArrayList(ImageItem.class.getClassLoader());
-    }
 
-    ArrayList<ImageItem> getListOfCurrentStudents() {
-        return listOfCurrentStudents;
-    }
+//    Professor(Parcel in){
+//        this.currentCourse = in.readString();
+//        this.num_present_students = in.readInt();
+//        this.num_absent_students = in.readInt();
+//        this.num_total_students = in.readInt();
+//        this.attendance_percentage = in.readDouble();
+//
+//        in.readTypedList(listOfCurrentStudents,ImageItem.CREATOR);
+//    }
 
-    void setListOfCurrentStudents(ArrayList<ImageItem> listOfCurrentStudents) {
-        this.listOfCurrentStudents = listOfCurrentStudents;
-    }
+//    ArrayList getListOfCurrentStudents() {
+//        return listOfCurrentStudents;
+//    }
+//
+//    void setListOfCurrentStudents(ArrayList<ImageItem> listOfCurrentStudents) {
+//        this.listOfCurrentStudents = listOfCurrentStudents;
+//    }
 
     String getCurrentCourse() {
         return currentCourse;
@@ -83,22 +92,36 @@ public class Professor  extends User implements Parcelable {
         this.attendance_percentage = attendance_percentage;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public ArrayList<ImageItem> getListOfCurrentStudents() {
+        return listOfCurrentStudents;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void setListOfCurrentStudents(ArrayList<ImageItem> listOfCurrentStudents) {
+        this.listOfCurrentStudents = listOfCurrentStudents;
     }
 
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public Professor createFromParcel(Parcel in) {
-            return new Professor(in);
-        }
-
-        public Professor[] newArray(int size) {
-            return new Professor[size];
-        }
-    };
+    //    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(currentCourse);
+//        dest.writeList(listOfCurrentStudents);
+//        dest.writeInt(num_present_students);
+//        dest.writeInt(num_absent_students);
+//        dest.writeInt(num_total_students);
+//        dest.writeDouble(attendance_percentage);
+//    }
+//
+//    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+//        public Professor createFromParcel(Parcel in) {
+//            return new Professor(in);
+//        }
+//
+//        public Professor[] newArray(int size) {
+//            return new Professor[size];
+//        }
+//    };
 }

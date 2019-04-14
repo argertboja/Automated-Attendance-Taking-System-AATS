@@ -1,8 +1,5 @@
 package bilkentcs492.aats;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.Serializable;
 
 /**
@@ -13,7 +10,7 @@ import java.io.Serializable;
  * Package name: bilkentcs492.aats
  * ALWAYS AIMING HIGH :D
  */
-public class User implements Parcelable {
+public class User implements Serializable {
 
     private String user_ID;
     private String user_password;
@@ -32,6 +29,15 @@ public class User implements Parcelable {
         this.user_surname   = user_surname;
         this.user_email     = user_email;
     }
+
+//    protected User(Parcel in) {
+//        user_ID = in.readString();
+//        user_password = in.readString();
+//        user_name = in.readString();
+//        user_surname = in.readString();
+//        user_email = in.readString();
+//    }
+
 
     public String getUser_ID() {
         return user_ID;
@@ -53,13 +59,31 @@ public class User implements Parcelable {
         return user_email;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+//    public static final Creator<User> CREATOR = new Creator<User>() {
+//        @Override
+//        public User createFromParcel(Parcel in) {
+//            return new User(in);
+//        }
+//
+//        @Override
+//        public User[] newArray(int size) {
+//            return new User[size];
+//        }
+//    };
+//
+//
+//    @Override
+//    public int describeContents() {
+//        return 0;
+//    }
+//
+//    @Override
+//    public void writeToParcel(Parcel dest, int flags) {
+//        dest.writeString(user_ID);
+//        dest.writeString(user_password);
+//        dest.writeString(user_name);
+//        dest.writeString(user_surname);
+//        dest.writeString(user_email);
+//    }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
 }

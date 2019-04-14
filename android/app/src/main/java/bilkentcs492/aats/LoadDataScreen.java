@@ -1,18 +1,9 @@
 package bilkentcs492.aats;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -68,17 +59,20 @@ public class LoadDataScreen extends AppCompatActivity {
             String user_surname    = (getIntent().getExtras().getString("user_surname"));
             String  current_course = (getIntent().getExtras().getString("professor_current_course"));
             if(user_id != null && user_password != null && user_email !=null && user_name != null && user_surname != null && current_course != null) {
-                 professor = new Professor(user_id, user_password, user_name, user_surname, user_email);
-                ((Professor) professor).setCurrentCourse(current_course);
-
-                ArrayList<ImageItem> listOfStudents = getStudentData(professor.getUser_ID(), professor.getUser_password());
-                Log.e("empty__",(listOfStudents == null) + "" );
+                ArrayList<ImageItem> listOfStudents = getStudentData(user_id, user_password);
+                professor = new Professor(user_id, user_password, user_name, user_surname, user_email,listOfStudents);
+                (professor).setCurrentCourse(current_course);
+                Log.e("empty__",(listOfStudents.size()) + "" );
                 if(listOfStudents != null) {
-                    ((Professor) professor).setListOfCurrentStudents(listOfStudents);
+//                    ((Professor) professor).setListOfCurrentStudents(listOfStudents);
                     ((Professor) professor).setNum_present_students(getNumberOfPresentStudents(listOfStudents));
                     ((Professor) professor).setNum_total_students(listOfStudents.size());
                     ((Professor) professor).setNum_absent_students(((Professor) professor).getNum_total_students() - ((Professor) professor).getNum_present_students());
                     ((Professor) professor).setAttendance_percentage((double)((Professor) professor).getNum_present_students()/(double)((Professor) professor).getNum_total_students());
+                    Log.e("empty__",(professor.getCurrentCourse()) + "" );
+                    Log.e("empty__",(professor.getNum_present_students()) + "" );
+                    Log.e("empty__",(professor.getNum_absent_students()) + "" );
+                    Log.e("empty__",(professor.getNum_total_students()) + "" );
                     return true;
                 }
                 return false;
@@ -90,11 +84,11 @@ public class LoadDataScreen extends AppCompatActivity {
         protected void onPostExecute(Boolean course_received) {
             // Pass object to next class
             if(course_received) {
-                Intent i = new Intent(LoadDataScreen.this, ProfessorActivity.class);
-//                Bundle bundle = new Bundle();
-//                bundle.putParcelable();
-                i.putExtra("ProfessorData", professor);
-                startActivity(i);
+                Intent intent = new Intent(LoadDataScreen.this, ProfessorActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("ProfessorData", professor);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 finish();
             }else{
                 Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
@@ -144,12 +138,20 @@ public class LoadDataScreen extends AppCompatActivity {
                             String studentID = json_data.optString("studentID");
                             String base64 = json_data.optString("base64");
                             base64 = base64.substring(base64.indexOf(",") + 1);
-                            final byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
-                            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-                            //                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap);
-                            decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
-                            decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
-                            imageItems.add(new ImageItem(decodedBitmap, studentID, false));
+
+//                            final byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
+//                            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+//                            //                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap);
+//                            decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
+//                            decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
+//                            ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+//                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+//                            byte[] byteArray = bStream.toByteArray();
+
+
+
+
+                            imageItems.add(new ImageItem(base64, studentID, false));
                         } catch (JSONException e) {
                             Log.e("JSONException", "Error Parsing Student Data");
                             Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
@@ -194,35 +196,6 @@ public class LoadDataScreen extends AppCompatActivity {
             }
         }
         return num_present;
-    }
-
-    public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, float smoothness) {
-        if(bitmap != null) {
-            Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(output);
-
-            final int color = 0xff424242;
-            final Paint paint = new Paint();
-            final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-            final RectF rectF = new RectF(rect);
-//            final float roundPx = smoothness;
-            final Rect topRightRect = new Rect(bitmap.getWidth() / 2, 0, bitmap.getWidth(), bitmap.getHeight() / 2);
-            final Rect bottomRect = new Rect(0, bitmap.getHeight() / 2, bitmap.getWidth(), bitmap.getHeight());
-
-            paint.setAntiAlias(true);
-            canvas.drawARGB(0, 0, 0, 0);
-            paint.setColor(color);
-            canvas.drawRoundRect(rectF, smoothness, smoothness, paint);
-            // Fill in upper right corner
-            //  canvas.drawRect(topRightRect, paint);
-            // Fill in bottom corners
-            canvas.drawRect(bottomRect, paint);
-
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
-            canvas.drawBitmap(bitmap, rect, rect, paint);
-
-            return output;
-        }else return null;
     }
 
 
