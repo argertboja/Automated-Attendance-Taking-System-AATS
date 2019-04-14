@@ -99,11 +99,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_courses) {
+        if (id == R.id.nav_professor) {
             setTitle("Course Info");
             Bundle bundle = new Bundle();
             bundle.putString("user_id", (getIntent().getExtras().getString("user_id")));
             bundle.putString("user_password",  (getIntent().getExtras().getString("user_password")));
+
+            bundle.putString("professor_current_course",  (getIntent().getExtras().getString("professor_current_course")));
+
             ProfessorCourseViewFragment course_info_tab = new ProfessorCourseViewFragment();
             course_info_tab.setArguments(bundle);
             FragmentManager fragmentManager = getSupportFragmentManager();

@@ -61,6 +61,7 @@ public class ProfessorCourseViewFragment extends Fragment {
     ArrayList<ImageItem> studentList;
     private GridView gridView;
     private EditText searchBar;
+    private TextView courseName;
     private StudentsGridViewAdaptor adapter;
     private String student_objection_ID; // CURRENT STUDENT BEING MARKED AS PRESENT MANUALLY
     public static final int CONNECTION_TIMEOUT = 10000;
@@ -75,6 +76,8 @@ public class ProfessorCourseViewFragment extends Fragment {
     private final String GET_STUDENT_LIST_URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_professors_course.php";
     private String professorId ;
     private String professorPassword ;
+    private String professorCurrentCourse ;
+
     private Context currentContext;
 
     public ProfessorCourseViewFragment() {
@@ -93,8 +96,12 @@ public class ProfessorCourseViewFragment extends Fragment {
         if (getArguments() != null) {
             professorId = getArguments().getString("user_id");
             professorPassword = getArguments().getString("user_password");
-            courseID.setText(professorId);
+            professorCurrentCourse = getArguments().getString("professor_current_course");
+            Log.e("%%%%",""+professorCurrentCourse+"_");
+            Log.e("%%%%ID",""+professorId+"_");
+            Log.e("%%%%pasw",""+professorPassword+"_");
         }
+        courseID.setText(professorCurrentCourse);
         gridView = (GridView) rootView.findViewById(R.id.grid_view);
 //        grid_width = gridView.getWidth();
 //        int height = gridView.getHeight();
@@ -103,6 +110,7 @@ public class ProfessorCourseViewFragment extends Fragment {
         adapter = new StudentsGridViewAdaptor(getActivity(), R.layout.grid_item_layout,studentList );
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new GridViewClickListener(getActivity()));
+
 
         // Add on text change listener for the search bar
         searchBar.addTextChangedListener(new TextWatcher() {
@@ -162,7 +170,7 @@ public class ProfessorCourseViewFragment extends Fragment {
                                     final byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
                                     Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
                                     //                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap);
-                                    Log.e("studentID", studentID);
+
 
                                     decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
                                     decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
@@ -303,6 +311,7 @@ public class ProfessorCourseViewFragment extends Fragment {
         }
     }
 
+    // UPLOAD HAPPENS HERE
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("_________ ERROR: "+resultCode,"Error " + requestCode);
