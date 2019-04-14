@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -206,6 +205,8 @@ public class LoginActivity extends AppCompatActivity  {
         private String user_email;
         private String user_presence;
         private String user_password;
+        private String professor_current_course;
+        private String student_current_course;
         private String URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/login.php";
 
         UserLoginTask(String id, String password) {
@@ -224,16 +225,7 @@ public class LoginActivity extends AppCompatActivity  {
                 return false;
             }
 
-//            for (String credential : DUMMY_CREDENTIALS) {
-//                String[] pieces = credential.split(":");
-//                if (pieces[0].equals(mEmail)) {
-//                    // Account exists, return true if the password matches.
-//                    pieces[1].equals(mPassword);
-//                }
-//            }
             return  authenticateUser(id, mPassword);
-
-            // TODO: register the new account here.
 
         }
 
@@ -243,7 +235,6 @@ public class LoginActivity extends AppCompatActivity  {
             showProgress(false);
 
             if (success) {
-                finish();
                 Intent login_success = new Intent(LoginActivity.this, MainActivity.class);
                 Bundle mBundle = new Bundle();
                 mBundle.putString("user_id", id);
@@ -252,8 +243,12 @@ public class LoginActivity extends AppCompatActivity  {
                 mBundle.putString("user_name", user_name);
                 mBundle.putString("user_surname", user_surname);
                 mBundle.putString("user_presence", user_presence);
+                mBundle.putString("professor_current_course", professor_current_course);
+
+
                 login_success.putExtras(mBundle);
                 startActivity(login_success);
+                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_credentials));
                 mPasswordView.requestFocus();
@@ -287,13 +282,12 @@ public class LoginActivity extends AppCompatActivity  {
                     json_data = receiveData.getJSONObject(0);
 
                     if (json_data.optString("response") == null) {
-                        Log.e("HELLOO--", json_data.optString("response"));
+//                        Log.e("HELLOO--", json_data.optString("response"));
                     } else {
                         auth_result = json_data.optString("response");
                     }
                 } catch (final JSONException e) {
-                    //LOG ERROR
-                    Log.e("JSONException:AUTH_MSG", "Error with JSON parsing RESPONSE");
+//                    Log.e("JSONException:AUTH_MSG", "Error with JSON parsing RESPONSE");
                     e.printStackTrace();
                     LoginActivity.this.runOnUiThread(new Runnable() {
                        @Override
@@ -304,7 +298,7 @@ public class LoginActivity extends AppCompatActivity  {
                     return false;
                 }
                 if (auth_result.equals("AUTH_FAILED")) {
-                    Log.e("not AUTHENTICATED", "wrong credentials");
+//                    Log.e("not AUTHENTICATED", "wrong credentials");
                     LoginActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -312,22 +306,34 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     });
                     return false; // authentication failed
-                } else {
+                } else{
                     try {
-
+                        if(json_data.optString("name") == null){
+                            LoginActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( LoginActivity.this, "LOGIN UNSUCCESSFUL" , Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            return false;
+                        }
                         // assign data to varables
-                        user_name = json_data.getString("name");
+                        user_name = json_data.optString("name");
                         user_surname = json_data.getString("surname");
                         user_email = json_data.getString("email");
                         user_password = json_data.getString("password");
+
                         if (!json_data.getString("present").equals("-1")) {
                             user_presence = json_data.getString("present");
+//                            Log.e("student__",user_presence);
                         } else {
-                            user_presence = "-1"; // user is professor, no presence
+                            user_presence = json_data.getString("present"); // user is professor, no presence
+                            professor_current_course = json_data.optString("classID");
+//                            Log.e("professor__",professor_current_course);
                         }
                         return true;
                     } catch (final JSONException e) {
-                        Log.e("JSONException: ", "Error with JSON parsing");
+//                        Log.e("JSONException: ", "Error with JSON parsing");
                         e.printStackTrace();
                         LoginActivity.this.runOnUiThread(new Runnable() {
                             @Override
