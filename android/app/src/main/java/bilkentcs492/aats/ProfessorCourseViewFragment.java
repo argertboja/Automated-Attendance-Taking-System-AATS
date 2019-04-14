@@ -12,7 +12,6 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -26,7 +25,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,6 +74,7 @@ public class ProfessorCourseViewFragment extends Fragment {
     private final String UPLOAD_URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/upload_image.php";
     private final String GET_STUDENT_LIST_URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_professors_course.php";
     private String professorId ;
+    private String professorPassword ;
     private Context currentContext;
 
     public ProfessorCourseViewFragment() {
@@ -93,6 +92,7 @@ public class ProfessorCourseViewFragment extends Fragment {
         TextView courseID = rootView.findViewById(R.id.course_ID);
         if (getArguments() != null) {
             professorId = getArguments().getString("user_id");
+            professorPassword = getArguments().getString("user_password");
             courseID.setText(professorId);
         }
         gridView = (GridView) rootView.findViewById(R.id.grid_view);
@@ -127,7 +127,7 @@ public class ProfessorCourseViewFragment extends Fragment {
     }
 
     /**
-     * EDIT THIS, GET FROM DATABASE
+     *
      * @param studentList : a list of all the students enrolled in class
      * @return returns an arraylist of ImageItem type, containing an image bitmap related to the
      * student and small info on his name/id on a string
@@ -145,49 +145,46 @@ public class ProfessorCourseViewFragment extends Fragment {
 
                 // set Parameters .. ex: ?id=1
                 List<QueryParameter> params = new ArrayList<>();
-                params.add(new QueryParameter("professorID", professorId));
+                params.add(new QueryParameter("ID", professorId));
+                params.add(new QueryParameter("password", professorPassword));
                 retrieve_professors_course_data.setParams(params);
 
-                JSONArray receiveData = retrieve_professors_course_data.requestAndFetch();
+                Log.e("()",professorId + "_" + professorPassword    );
+                JSONArray receiveData = retrieve_professors_course_data.requestAndFetch(getActivity());
+                if( receiveData != null) {
+                        for (int i = 0; i < receiveData.length(); i++) {
+                                try {
+                                    JSONObject json_data = receiveData.getJSONObject(i);
 
-                Display display = getActivity().getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int width = (size.x - 60)/4;
-                Log.e("__=__", width+"");
+                                    String studentID = json_data.optString("studentID");
+                                    String base64 = json_data.optString("base64");
+                                    base64 = base64.substring(base64.indexOf(",") + 1);
+                                    final byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
+                                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                                    //                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap);
+                                    Log.e("studentID", studentID);
 
-//                int height = size.y;
-
-                for (int i = 0; i < receiveData.length(); i++) {
-                    JSONObject json_data = null;
-                    try {
-                        json_data = receiveData.getJSONObject(i);
-
-                        String studentID = json_data.getString("studentID");
-                        String base64 = json_data.getString("base64");
-                        base64 = base64.substring(base64.indexOf(",") + 1);
-                        final byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
-                        Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-//                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap);
-                        Log.e("studentID", studentID);
-
-
-
-
-                        Log.e("_______width", width+"");
-                        decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
-                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
-                        imageItems.add(new ImageItem(decodedBitmap, studentID, false));
-                    } catch (JSONException e) {
-                        Log.e("JSONException", "Error Parsing Student Data");
-                        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(currentContext, "Error Parsing Student Data", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        e.printStackTrace();
-                    }
+                                    decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
+                                    decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
+                                    imageItems.add(new ImageItem(decodedBitmap, studentID, false));
+                                } catch (JSONException e) {
+                                    Log.e("JSONException", "Error Parsing Student Data");
+                                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(currentContext, "Error Parsing Student Data", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    e.printStackTrace();
+                                }
+                        }
+                }else{
+                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText( getActivity(), "SERVER CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             }
 
@@ -200,42 +197,6 @@ public class ProfessorCourseViewFragment extends Fragment {
             return imageItems;
 
          }
-
-
-
-//        String filename = "21500342";
-//        Log.e("Ckemi","oooooooooooo123");
-//
-//        InputStream ims = null;
-//        try {
-//            ims = getActivity().getAssets().open( "mona.jpg");
-//        } catch (NullPointerException | IOException e) {
-//            Log.e("ERROR 1",imageItems.get(19).getStudentID());
-//
-//            e.printStackTrace();
-//
-//        }
-//
-////        Bitmap bitmap = getRoundedCornerBitmap(BitmapFactory.decodeStream(ims));
-//            Bitmap bitmap = getRoundedCornerBitmap(BitmapFactory.decodeStream(ims));
-//        if(bitmap==null)
-//            bitmap =BitmapFactory.decodeStream(ims);
-//        try {
-//            ims.close();
-//        } catch (IOException e) {
-//            Log.e("ERROR 2",imageItems.get(19).getStudentID());
-//
-//            e.printStackTrace();
-//        }
-//
-//        for (int i = 0; i < 50; i++){
-//            imageItems.add(new ImageItem(bitmap, filename,true));
-//        }
-//        imageItems.add(new ImageItem(bitmap, "21500010",false));
-//        imageItems.add(new ImageItem(bitmap, "21500009",false));
-//
-//        Log.e("Ckemi",imageItems.get(19).getStudentID());
-
 
 
 
@@ -377,12 +338,55 @@ public class ProfessorCourseViewFragment extends Fragment {
 
                     // set Parameters .. ex: ?id=1
                     List<QueryParameter> params = new ArrayList<>();
+                    params.add(new QueryParameter("ID",professorId ));
+                    params.add(new QueryParameter("password",professorPassword ));
+                    Log.e("pasw: " , professorId +"_" +professorPassword);
                     params.add(new QueryParameter("image",image_str ));
-                    params.add(new QueryParameter("filename",student_objection_ID + ".jpg" ));
+                    params.add(new QueryParameter("filename",""+student_objection_ID + ".jpg" ));
                     uploadRequest.setParams(params);
 
-                    uploadRequest.uploadRequest(getActivity());
+                    JSONArray receiveResponse = uploadRequest.requestAndFetch(getActivity());
 
+                    if(receiveResponse != null){
+                        JSONObject object;
+                        String responseText ="";
+                        try {
+                            object = receiveResponse.getJSONObject(0);
+                            responseText = object.optString("response");
+                        } catch (final JSONException e) {
+                            e.printStackTrace();
+                            Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( getActivity(), "Upload Response failed to parse: " + e.getMessage() , Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                        if(responseText != null){ // print response
+                            final String responseText_const = responseText;
+                            Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( getActivity(), responseText_const , Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }else{
+                            Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( getActivity(), "Upload Response failed to parse: " , Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                    }else{ // no internet probably
+                        Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText( getActivity(), "INTERNET CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
                 }
             });
             t.start();

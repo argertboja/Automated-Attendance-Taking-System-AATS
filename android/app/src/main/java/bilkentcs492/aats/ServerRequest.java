@@ -35,6 +35,7 @@ public class ServerRequest {
     List<QueryParameter> queryParamList;
     private Uri.Builder paramURI; // Uri with all appended parameters from queryParamList
     private String uploadResponse;
+
     ServerRequest(){
 
     }
@@ -48,7 +49,7 @@ public class ServerRequest {
     }
 
     // makes a request and fetches the json outpu
-    JSONArray requestAndFetch(){
+    JSONArray requestAndFetch(final Activity activity){
 
         HttpURLConnection conn;
         URL url = null;
@@ -58,10 +59,17 @@ public class ServerRequest {
             // Enter URL address where your php file resides
             url = new URL(URL);
 
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             // TODO Auto-generated catch block
             Log.e("MalformedURLException: ", "Error forming URL");
             e.printStackTrace();
+            activity.runOnUiThread(new Runnable() {
+                String response;
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "MalformedURLException:"+ e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
             return null;
         }
 
@@ -91,13 +99,19 @@ public class ServerRequest {
             os.close();
             conn.connect();
 
-        } catch (IOException e1) {
+        } catch (final IOException e1) {
             // TODO Auto-generated catch block
             Log.e("IOException: ", "Error sending POST request");
             e1.printStackTrace();
+            activity.runOnUiThread(new Runnable() {
+                String response;
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "IOException: Error sending POST request"+ e1.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
             return null;
         }
-
 
         // RECEIVE RESPONSE FROM SERVER , NULL / JSON
         try {
@@ -118,31 +132,31 @@ public class ServerRequest {
 
                 String outputData = null;
                 outputData = result.toString();
-
-                //SERVER RETURNED NULL
-                if (outputData.equals("null")){
-                    Log.e("Server returned: ",outputData); // null
-                    conn.disconnect();
-                    return null;
-                }
-
-                // SERVER RETURNED VALID DATA IN JSON FORMAT
-                else {
-                    try {
-                        conn.disconnect();
-                        return new JSONArray(outputData);
-                    } catch (JSONException e) {
-                        Log.e("log_tag", "Error parsing jsonarray " + e.toString());
-                        conn.disconnect();
-                        return null;
-                    }
-                }
+                conn.disconnect();
+                return new JSONArray(outputData);
 
             }
             return null;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.e("IOException: ", "Error receiving RESPONSE from server");
             e.printStackTrace();
+            activity.runOnUiThread(new Runnable() {
+                String response;
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "IOException: Error receiving RESPONSE from server"+ e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+            return null;
+        } catch (final JSONException e) {
+            e.printStackTrace();
+            activity.runOnUiThread(new Runnable() {
+                String response;
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "IOException: Error parsing response to JSON"+ e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
             return null;
         }
     }
