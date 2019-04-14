@@ -328,6 +328,7 @@ public class LoginActivity extends AppCompatActivity  {
                         if (!json_data.getString("present").equals("-1")) {
                             user_presence = json_data.getString("present");
 //                            Log.e("student__",user_presence);
+                            professor_current_course = json_data.optString("classID");
                         } else {
                             user_presence = json_data.getString("present"); // user is professor, no presence
                             professor_current_course = json_data.optString("classID");
