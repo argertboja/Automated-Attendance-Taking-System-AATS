@@ -62,13 +62,12 @@ public class LoadDataScreen extends AppCompatActivity {
                 ArrayList<ImageItem> listOfStudents = getStudentData(user_id, user_password);
                 professor = new Professor(user_id, user_password, user_name, user_surname, user_email,listOfStudents);
                 (professor).setCurrentCourse(current_course);
-                Log.e("empty__",(listOfStudents.size()) + "" );
-                if(listOfStudents != null) {
+                if(listOfStudents.size() != 0) {
 //                    ((Professor) professor).setListOfCurrentStudents(listOfStudents);
-                    ((Professor) professor).setNum_present_students(getNumberOfPresentStudents(listOfStudents));
-                    ((Professor) professor).setNum_total_students(listOfStudents.size());
-                    ((Professor) professor).setNum_absent_students(((Professor) professor).getNum_total_students() - ((Professor) professor).getNum_present_students());
-                    ((Professor) professor).setAttendance_percentage((double)((Professor) professor).getNum_present_students()/(double)((Professor) professor).getNum_total_students());
+                    ( professor).setNum_present_students(getNumberOfPresentStudents(listOfStudents));
+                    ( professor).setNum_total_students(listOfStudents.size());
+                    ( professor).setNum_absent_students(((Professor) professor).getNum_total_students() - ((Professor) professor).getNum_present_students());
+                    ( professor).setAttendance_percentage(); // set within the class
                     Log.e("empty__",(professor.getCurrentCourse()) + "" );
                     Log.e("empty__",(professor.getNum_present_students()) + "" );
                     Log.e("empty__",(professor.getNum_absent_students()) + "" );
@@ -95,6 +94,8 @@ public class LoadDataScreen extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText( getApplicationContext(), "NO COURSES FOR YOU NOW!" , Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(LoadDataScreen.this, LoginActivity.class);
+                        startActivity(intent);
                     }
                 });
             }
@@ -138,20 +139,8 @@ public class LoadDataScreen extends AppCompatActivity {
                             String studentID = json_data.optString("studentID");
                             String base64 = json_data.optString("base64");
                             base64 = base64.substring(base64.indexOf(",") + 1);
-
-//                            final byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
-//                            Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-//                            //                        decodedBitmap = getRoundedCornerBitmap(decodedBitmap);
-//                            decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
-//                            decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
-//                            ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-//                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-//                            byte[] byteArray = bStream.toByteArray();
-
-
-
-
-                            imageItems.add(new ImageItem(base64, studentID, false));
+                            boolean present = (Integer.parseInt(json_data.optString("present")) == 1) ;
+                            imageItems.add(new ImageItem(base64, studentID, present));
                         } catch (JSONException e) {
                             Log.e("JSONException", "Error Parsing Student Data");
                             Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
@@ -161,6 +150,7 @@ public class LoadDataScreen extends AppCompatActivity {
                                 }
                             });
                             e.printStackTrace();
+
                         }
                     }
                 }else{
@@ -182,7 +172,7 @@ public class LoadDataScreen extends AppCompatActivity {
         if(imageItems.size() != 0) {
             return imageItems;
         }else{
-            return null;
+            return new ArrayList<>();
         }
 
     }
@@ -191,7 +181,7 @@ public class LoadDataScreen extends AppCompatActivity {
     private int getNumberOfPresentStudents( ArrayList<ImageItem> listOfStudents){
         int num_present = 0;
         for(int i = 0; i < listOfStudents.size(); i++){
-            if(listOfStudents.get(0).isPresent()){
+            if(listOfStudents.get(i).isPresent()){
                 num_present++;
             }
         }
