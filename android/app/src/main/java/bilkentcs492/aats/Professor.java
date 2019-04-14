@@ -18,39 +18,17 @@ public class Professor  extends User implements Serializable {
     private int num_present_students;
     private int num_absent_students;
     private int num_total_students;
-    private double attendance_percentage;
+    private int attendance_percentage;
     private ArrayList<ImageItem> listOfCurrentStudents;
 
     Professor(String user_ID,String user_password,String user_name,String user_surname,String user_email, ArrayList<ImageItem> listOfCurrentStudents  ){
         super(user_ID,user_password,user_name,user_surname,user_email);
-//        listOfCurrentStudents = new ArrayList<>();
         this.listOfCurrentStudents = listOfCurrentStudents;
     }
 
-
     Professor(String user_ID,String user_password,String user_name,String user_surname,String user_email  ){
         super(user_ID,user_password,user_name,user_surname,user_email);
-//        listOfCurrentStudents = new ArrayList<>();
     }
-
-
-//    Professor(Parcel in){
-//        this.currentCourse = in.readString();
-//        this.num_present_students = in.readInt();
-//        this.num_absent_students = in.readInt();
-//        this.num_total_students = in.readInt();
-//        this.attendance_percentage = in.readDouble();
-//
-//        in.readTypedList(listOfCurrentStudents,ImageItem.CREATOR);
-//    }
-
-//    ArrayList getListOfCurrentStudents() {
-//        return listOfCurrentStudents;
-//    }
-//
-//    void setListOfCurrentStudents(ArrayList<ImageItem> listOfCurrentStudents) {
-//        this.listOfCurrentStudents = listOfCurrentStudents;
-//    }
 
     String getCurrentCourse() {
         return currentCourse;
@@ -84,15 +62,15 @@ public class Professor  extends User implements Serializable {
         this.num_absent_students = num_absent_students;
     }
 
-    double getAttendance_percentage() {
+    int getAttendance_percentage() {
         return attendance_percentage;
     }
 
-    void setAttendance_percentage(double attendance_percentage) {
-        this.attendance_percentage = attendance_percentage;
+    void setAttendance_percentage() {
+        this.attendance_percentage =  (int) ((double)this.num_present_students / (double)this.num_total_students *100) ;
     }
 
-    public ArrayList<ImageItem> getListOfCurrentStudents() {
+    ArrayList<ImageItem> getListOfCurrentStudents() {
         return listOfCurrentStudents;
     }
 
@@ -100,28 +78,4 @@ public class Professor  extends User implements Serializable {
         this.listOfCurrentStudents = listOfCurrentStudents;
     }
 
-    //    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel dest, int flags) {
-//        dest.writeString(currentCourse);
-//        dest.writeList(listOfCurrentStudents);
-//        dest.writeInt(num_present_students);
-//        dest.writeInt(num_absent_students);
-//        dest.writeInt(num_total_students);
-//        dest.writeDouble(attendance_percentage);
-//    }
-//
-//    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-//        public Professor createFromParcel(Parcel in) {
-//            return new Professor(in);
-//        }
-//
-//        public Professor[] newArray(int size) {
-//            return new Professor[size];
-//        }
-//    };
 }

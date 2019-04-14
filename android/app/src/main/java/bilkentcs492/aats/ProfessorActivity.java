@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -27,31 +28,47 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class ProfessorActivity extends AppCompatActivity {
 
     private GridView gridView;
+    Professor professor;
     private StudentsGridViewAdaptor adapter;
     private String student_objection_ID;
     ArrayList<ImageItem> studentList;
     private String objection_picture_path;
+    ArrayList<ImageItem> items;
+    private int number_students_present;
+    private int number_students_absent;
+    private int number_students_total;
+    private int percentage_ratio;
     private static final int REQUEST_IMAGE_CAPTURE  = 1;
     private static final int BITMAP_SMALL_WIDTH     = 1200;
     private static final int BITMAP_SMALL_HEIGHT    = 1600;
+    private final String MARK_ABSENT_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/mark_student_absent.php";
+    private final String UPLOAD_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/upload_image.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_professor);
 
-        Professor professor  = (Professor) getIntent().getExtras().getSerializable("ProfessorData");;
+        professor  = (Professor) getIntent().getExtras().getSerializable("ProfessorData");;
 
         if(professor == null){
             Log.e("NULL","nullllll");
@@ -70,12 +87,14 @@ public class ProfessorActivity extends AppCompatActivity {
         if(professor.getCurrentCourse() == null){
             Log.e("NULL","");
         }
-        Log.e("balueeee",""+professor.getCurrentCourse());
-        ArrayList<ImageItem> items = professor.getListOfCurrentStudents();
-        Log.e("size--=",""+items.size());
+        items = professor.getListOfCurrentStudents();
+        studentList = items;
         adapter = new StudentsGridViewAdaptor(ProfessorActivity.this, R.layout.grid_item_layout ,items);
-        gridView.setOnItemClickListener(new GridViewClickListener(ProfessorActivity.this));
+
         gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener(new GridViewClickListener(ProfessorActivity.this));
+
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -93,12 +112,17 @@ public class ProfessorActivity extends AppCompatActivity {
             }
         });
 
+        //SET TEXT DATA
         courseID.setText(professor.getCurrentCourse());
-        presentNum.setText(professor.getNum_present_students()+"");
-        absentNum.setText(professor.getNum_absent_students()+"");
-        totalNum.setText(professor.getNum_total_students()+"");
-        String percentage = professor.getAttendance_percentage()+"";
-        percentage_num.setText(percentage);
+        number_students_present = professor.getNum_present_students() ;
+        number_students_absent = professor.getNum_absent_students();
+        number_students_total = number_students_present + number_students_absent;
+        percentage_ratio = professor.getAttendance_percentage();
+
+        presentNum.setText(String.valueOf(number_students_present));
+        absentNum.setText(String.valueOf(number_students_absent));
+        totalNum.setText(String.valueOf(number_students_total));
+        percentage_num.setText(String.valueOf(percentage_ratio));
 
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
@@ -140,7 +164,8 @@ public class ProfessorActivity extends AppCompatActivity {
 
                     .setNegativeButton(R.string.absent, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context, "MARKED ABSENT", Toast.LENGTH_SHORT).show();
+                        student_objection_ID = clicked_ID;
+                        markStudentAbsent();
                         }
                     })
 
@@ -190,6 +215,186 @@ public class ProfessorActivity extends AppCompatActivity {
         return image;
     }
 
+    // UPLOAD AND MARK PRESENCE HAPPENS HERE
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.e("_________ ERROR: "+resultCode,"Error " + requestCode);
+
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeFile(objection_picture_path, options);
+
+            Toast.makeText(getApplicationContext(),"Picture Taken Successfully!", Toast.LENGTH_SHORT).show();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+            bitmap = scaleDownToRatio(bitmap);
+
+            //bitmap = convert2Grayscale(bitmap);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, stream); //compress to which format you want.
+
+            byte [] byte_arr = stream.toByteArray();
+            final String image_str= new String(android.util.Base64.encode(byte_arr, android.util.Base64.DEFAULT));
+
+            // new thread because doing a HTTP request
+            Thread t = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    ServerRequest uploadRequest = new ServerRequest();
+                    // set URL
+                    uploadRequest.setURL(UPLOAD_URL);
+
+                    // set Parameters .. ex: ?id=1
+                    List<QueryParameter> params = new ArrayList<>();
+                    params.add(new QueryParameter("ID",professor.getUser_ID() ));
+                    params.add(new QueryParameter("password", professor.getUser_password() ));
+//                    Log.e("pasw: " , user_id +"_" +user_password);
+                    params.add(new QueryParameter("image",image_str ));
+                    params.add(new QueryParameter("filename",""+student_objection_ID  ));
+                    uploadRequest.setParams(params);
+
+                    JSONArray receiveResponse = uploadRequest.requestAndFetch(ProfessorActivity.this);
+
+                    if(receiveResponse != null){
+                        JSONObject object;
+                        String responseText ="";
+                        try {
+                            object = receiveResponse.getJSONObject(0);
+                            responseText = object.optString("response");
+                        } catch (final JSONException e) {
+                            e.printStackTrace();
+                            Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( getApplicationContext(), "Upload Response failed to parse: " + e.getMessage() , Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                        if(responseText != null){ // print response
+                            final String responseText_const = responseText;
+                            Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( getApplicationContext(), responseText_const , Toast.LENGTH_LONG).show();
+                                    updatePresenceOnUI(true);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }else{
+                            Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText( getApplicationContext(), "Upload Response failed to parse: " , Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                    }else{ // no internet probably
+                        Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText( getApplicationContext(), "INTERNET CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                }
+            });
+            t.start();
+
+
+        }
+
+    }
+
+    //MARK STUDENT AS ABSENT
+    private void markStudentAbsent(){
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerRequest uploadRequest = new ServerRequest();
+                // set URL
+                uploadRequest.setURL(MARK_ABSENT_URL);
+
+                // set Parameters .. ex: ?id=1
+                List<QueryParameter> params = new ArrayList<>();
+                params.add(new QueryParameter("ID",professor.getUser_ID() ));
+                params.add(new QueryParameter("password", professor.getUser_password() ));
+                params.add(new QueryParameter("studentID","" + student_objection_ID  ));
+                uploadRequest.setParams(params);
+
+                JSONArray receiveResponse = uploadRequest.requestAndFetch(ProfessorActivity.this);
+
+                if(receiveResponse != null){
+                    JSONObject object;
+                    String responseText ="";
+                    try {
+                        object = receiveResponse.getJSONObject(0);
+                        responseText = object.optString("response");
+                    } catch (final JSONException e) {
+                        e.printStackTrace();
+                        Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText( getApplicationContext(), "Mark absent response failed to parse: " + e.getMessage() , Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                    if(responseText != null){ // print response
+                        final String responseText_const = responseText;
+                        Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText( getApplicationContext(), responseText_const , Toast.LENGTH_LONG).show();
+                                updatePresenceOnUI(false);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }else{
+                        Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText( getApplicationContext(), "Mark Absent response failed to parse: " , Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+
+                }else{ // no internet probably
+                    Objects.requireNonNull(ProfessorActivity.this).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText( getApplicationContext(), "INTERNET CONNECTION ERROR" , Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+            }
+        });
+        t.start();
+    }
+
+    /**
+     *
+     * @param present : if true : mark objection-making student as present, else mark him as absent
+     */
+    private void updatePresenceOnUI(boolean present){
+        int index = -1;
+        for (int i = 0; i < items.size(); i++){
+            if(items.get(i).getStudentID().equals(student_objection_ID)){
+                index = i;
+                break;
+            }
+        }
+        if(index > -1) {
+            if (present) {
+                items.get(index).setPresent(true);
+            } else {
+                items.get(index).setPresent(false);
+            }
+        }
+    }
+
     /**
      *
      * @param bitmap : Original colored bitmap
@@ -217,5 +422,6 @@ public class ProfessorActivity extends AppCompatActivity {
         m.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), new RectF(0, 0, BITMAP_SMALL_WIDTH, BITMAP_SMALL_HEIGHT), Matrix.ScaleToFit.CENTER);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
     }
+
 
 }
