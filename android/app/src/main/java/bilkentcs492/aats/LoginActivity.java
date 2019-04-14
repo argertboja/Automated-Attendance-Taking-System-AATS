@@ -235,7 +235,7 @@ public class LoginActivity extends AppCompatActivity  {
             showProgress(false);
 
             if (success) {
-                Intent login_success = new Intent(LoginActivity.this, MainActivity.class);
+                Intent login_success = new Intent(LoginActivity.this, LoadDataScreen.class);
                 Bundle mBundle = new Bundle();
                 mBundle.putString("user_id", id);
                 mBundle.putString("user_password", user_password);

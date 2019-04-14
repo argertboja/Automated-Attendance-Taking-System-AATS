@@ -13,13 +13,12 @@ package bilkentcs492.aats;
  */
 
 import android.graphics.Bitmap;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class ImageItem {
+public class ImageItem implements Parcelable {
     private Bitmap image;
     private String studentID;
-
-
-
     private boolean isPresent;
 
 
@@ -29,6 +28,24 @@ public class ImageItem {
         this.studentID = title;
         this.isPresent = isPresent;
     }
+
+    protected ImageItem(Parcel in) {
+        image = in.readParcelable(Bitmap.class.getClassLoader());
+        studentID = in.readString();
+        isPresent = in.readByte() != 0;
+    }
+
+    public static final Creator<ImageItem> CREATOR = new Creator<ImageItem>() {
+        @Override
+        public ImageItem createFromParcel(Parcel in) {
+            return new ImageItem(in);
+        }
+
+        @Override
+        public ImageItem[] newArray(int size) {
+            return new ImageItem[size];
+        }
+    };
 
     Bitmap getImage() {
         return image;
@@ -52,5 +69,18 @@ public class ImageItem {
 
     public void setPresent(boolean present) {
         isPresent = present;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(image, flags);
+        dest.writeString(studentID);
+        dest.writeByte((byte) (isPresent ? 1 : 0));
     }
 }

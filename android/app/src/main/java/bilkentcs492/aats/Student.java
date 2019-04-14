@@ -1,5 +1,7 @@
 package bilkentcs492.aats;
 
+import java.io.Serializable;
+
 /**
  * Author      : Mr.Ndricim Rrapi
  * Project     : android
@@ -8,34 +10,30 @@ package bilkentcs492.aats;
  * Package name: bilkentcs492.aats
  * ALWAYS AIMING HIGH :D
  */
-class Student {
+class Student extends User implements Serializable {
 
-    private int studentID; //21500342
-    private String studentFaceID;
-    private boolean isPresent;
+    private boolean present;
+    private String currentCourse;
 
-    public Student(){
+
+    public Student(String user_ID,String user_password,String user_name,String user_surname,String user_email ){
+        super(user_ID,user_password,user_name,user_surname,user_email);
     }
 
-    public Student(int studentID, String studentFaceID, boolean isPresent){
-        this.isPresent = isPresent;
-        this.studentID = studentID;
-        this.studentFaceID = studentFaceID;
-    }
-
-    public int getStudentID() {
-        return studentID;
-    }
-
-    public void setStudentID(int studentID) {
-        this.studentID = studentID;
-    }
 
     public boolean isPresent() {
-        return isPresent;
+        return present;
     }
 
     public void setPresent(boolean present) {
-        isPresent = present;
+        this.present = present;
+    }
+
+    public String getCurrentCourse() {
+        return currentCourse;
+    }
+
+    public void setCurrentCourse(String currentCourse) {
+        this.currentCourse = currentCourse;
     }
 }

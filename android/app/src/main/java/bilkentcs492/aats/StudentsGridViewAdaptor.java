@@ -10,7 +10,6 @@ package bilkentcs492.aats;
  */
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -27,7 +26,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
-    private Context context;
+    private Activity activity;
     private int layoutResourceId;
     private ArrayList<ImageItem> data; // contains user image and id number
     private ArrayList<ImageItem> filterData; // duplicate array for filtering
@@ -35,10 +34,10 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
     private int lastPosition = -1;
 
 
-    StudentsGridViewAdaptor(Context context, int layoutResourceId, ArrayList<ImageItem> data) {
-        super(context, layoutResourceId, data);
+    StudentsGridViewAdaptor(Activity activity, int layoutResourceId, ArrayList<ImageItem> data) {
+        super(activity, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
-        this.context = context;
+        this.activity = activity;
         this.data = data;
         filterData = new ArrayList<ImageItem>();
         this.filterData.addAll(data); // filterData will be holding all elements to aid in the search impl
@@ -53,7 +52,7 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
         ViewHolder holder;
 
         if (row == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
+            LayoutInflater inflater = activity.getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
             row.setLayoutParams(new GridView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
