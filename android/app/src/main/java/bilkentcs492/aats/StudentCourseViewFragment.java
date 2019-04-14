@@ -92,7 +92,7 @@ public class StudentCourseViewFragment extends Fragment {
                 receiveStudentInfo.setURL(URL);
 
                 List<QueryParameter> params = new ArrayList<>();
-                params.add(new QueryParameter("ID", ))
+                params.add(new QueryParameter("ID", id));
             }
         });
         return new ArrayList<String>();
