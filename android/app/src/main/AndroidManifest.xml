@@ -18,7 +18,8 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ProfessorActivity"></activity>
+        <activity android:name=".StudentActivity"></activity>
+        <activity android:name=".ProfessorActivity" />
         <activity android:name=".LoadDataScreen" />
 
         <provider

@@ -2,30 +2,24 @@ package bilkentcs492.aats;
 
 import java.io.Serializable;
 
-/**
- * Author      : Mr.Ndricim Rrapi
- * Project     : android
- * Date        :  03/11/2019
- * Time        : 11 | 11: 01 of 03 2019
- * Package name: bilkentcs492.aats
- * ALWAYS AIMING HIGH :D
- */
 class Student extends User implements Serializable {
 
-    private boolean present;
+    private String present;
     private String currentCourse;
 
 
     public Student(String user_ID,String user_password,String user_name,String user_surname,String user_email ){
         super(user_ID,user_password,user_name,user_surname,user_email);
+        this.present = present;
+        this.currentCourse = currentCourse;
     }
 
 
-    public boolean isPresent() {
+    public String isPresent() {
         return present;
     }
 
-    public void setPresent(boolean present) {
+    public void setPresent(String present) {
         this.present = present;
     }
 

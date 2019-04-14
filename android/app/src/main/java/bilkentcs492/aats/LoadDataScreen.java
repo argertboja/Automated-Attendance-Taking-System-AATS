@@ -29,7 +29,11 @@ public class LoadDataScreen extends AppCompatActivity {
     private final String GET_STUDENT_LIST_URL       = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_professors_course.php";
     private String objection_picture_path;
     Professor professor;
-    User student;
+
+    // Student
+    Student student;
+    private final String GET_STUDENT_INFO           = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_student_info.php";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,12 +44,52 @@ public class LoadDataScreen extends AppCompatActivity {
             ProfessorTask task =  new ProfessorTask();
             task.execute("");
         }else if(userType.equals(TYPE_STUDENT_ABSENT) || userType.equals(TYPE_STUDENT_PRESENT) ){
-            //
+            StudentTask studentTask = new StudentTask();
+            studentTask.execute("");
         }
 
     }
 
+    private class StudentTask extends  AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground (String... params) {
+            String user_id         = (getIntent().getExtras().getString("user_id"));
+            String user_password   = (getIntent().getExtras().getString("user_password"));
+            String user_email      = (getIntent().getExtras().getString("user_email"));
+            String user_name       = (getIntent().getExtras().getString("user_name"));
+            String user_surname    = (getIntent().getExtras().getString("user_surname"));
+            String user_presence    = (getIntent().getExtras().getString("user_presence"));
+            String  current_course = (getIntent().getExtras().getString("professor_current_course"));
 
+            if(user_id != null && user_password != null && user_email != null && user_name != null && user_surname != null && user_presence != null) {
+                student = new Student(user_id, user_password, user_name, user_surname, user_email);
+                student.setCurrentCourse(current_course);
+                student.setPresent(user_presence);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean course_received) {
+            // Pass object to next class
+            if(course_received) {
+                Intent intent = new Intent(LoadDataScreen.this, StudentActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("StudentData", student);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                finish();
+            }else{
+                Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText( getApplicationContext(), "NO COURSES FOR YOU NOW!" , Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }
+    }
 
     private  class ProfessorTask extends AsyncTask<String, Void, Boolean> {
 
