@@ -10,13 +10,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * This class will show the current course happening now and the students current isPresent status
  * A simple {@link Fragment} subclass.
  */
 public class StudentCourseViewFragment extends Fragment {
-
+    private String id;
+    private String Password;
+    public static final int CONNECTION_TIMEOUT=10000;
+    public static final int READ_TIMEOUT=15000;
+    private String user_name ;
+    private String user_surname;
+    private String user_presence;
+    private String user_password;
+    private String user_course;
+    private String URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retreive_student_info.php";
 
     public StudentCourseViewFragment() {
         // Required empty public constructor
@@ -70,6 +82,20 @@ public class StudentCourseViewFragment extends Fragment {
             }
         });
         return  rootView;
+    }
+
+    private ArrayList<String> getStudentInfo() {
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerRequest receiveStudentInfo = new ServerRequest();
+                receiveStudentInfo.setURL(URL);
+
+                List<QueryParameter> params = new ArrayList<>();
+                params.add(new QueryParameter("ID", ))
+            }
+        });
+        return new ArrayList<String>();
     }
 
 }
