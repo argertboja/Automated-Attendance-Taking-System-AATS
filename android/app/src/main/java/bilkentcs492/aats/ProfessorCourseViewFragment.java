@@ -89,7 +89,7 @@ public class ProfessorCourseViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView =  (View) inflater.inflate(R.layout.fragment_professor_course_view, container, false);
+            rootView =  (View) inflater.inflate(R.layout.activity_main, container, false);
         currentContext = rootView.getContext();
         searchBar = (EditText) rootView.findViewById(R.id.search_bar) ;
         TextView courseID = rootView.findViewById(R.id.course_ID);
@@ -174,7 +174,7 @@ public class ProfessorCourseViewFragment extends Fragment {
 
                                     decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
                                     decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
-                                    imageItems.add(new ImageItem(decodedBitmap, studentID, false));
+                                    imageItems.add(new ImageItem(base64, studentID, false));
                                 } catch (JSONException e) {
                                     Log.e("JSONException", "Error Parsing Student Data");
                                     Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
