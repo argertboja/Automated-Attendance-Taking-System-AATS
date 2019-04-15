@@ -16,6 +16,7 @@ $password = $_REQUEST['password'];
 $professorID = (int) $ID;
 
 $auth_response = attempt_authentication($ID, $password);
+
 if($auth_response  == "AUTH_SUCCESS"){
 		// set timezone to istanbul to receive current time ( to be exctended to other countries in the future)
 		date_default_timezone_set('Europe/Istanbul');
@@ -43,20 +44,22 @@ if($auth_response  == "AUTH_SUCCESS"){
 		if($output[0]["classID"]){
 		  	$courseName = (string) $output[0]["classID"];
 
-		 	$sql = "SELECT DISTINCT studentID from students_in_class WHERE classID =  '$courseName' ";
+		 	$sql = "SELECT DISTINCT studentID, present from students_in_class WHERE classID =  '$courseName' ";
 	 		$result = mysqli_query($connection, $sql);
 		 	$output = array();
 		 	if (mysqli_num_rows($result) > 0) {
 			    while($row = mysqli_fetch_assoc($result)) {
-			        $tmp = array();
-				    $tmp["studentID"] = $row["studentID"];
-				    $path = $parentPath . $row["studentID"] . '.jpg';
-					$type = pathinfo($path, PATHINFO_EXTENSION);
-					$data = file_get_contents($path);
-					$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-				 	$tmp["base64"]	= $base64;
-					array_push($output, $tmp);
-			    }
+			        	$tmp = array();
+					    $tmp["studentID"] = $row["studentID"];
+					    $tmp["present"] = $row["present"];
+					    $path = $parentPath . $row["studentID"] . '.jpg';
+						$type = pathinfo($path, PATHINFO_EXTENSION);
+						$data = file_get_contents($path);
+						$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+					 	$tmp["base64"]	= $base64;
+						array_push($output, $tmp);
+				
+			    }	
 			    print(json_encode($output));
 		 	} else {
 			   print(json_encode($NO_DATA));
@@ -67,7 +70,7 @@ if($auth_response  == "AUTH_SUCCESS"){
 }else if ($auth_response  == "AUTH_FAILED"){
 	print(json_encode($AUTH_FAILED));
 }
-
+echo $auth_response ;
 
  mysqli_close($connection);
 

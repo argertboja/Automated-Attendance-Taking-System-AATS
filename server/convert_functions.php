@@ -17,9 +17,34 @@ $UPLOAD_AUTH = array();
 $tmp["response"] 	= "NO_PERMISSION_TO_UPLOAD";		
 array_push($UPLOAD_AUTH,$tmp);
 
+$UPLOAD_FAILED = array();
+$tmp["response"] 	= "FAILED TO UPLOAD IMAGE, TRY AGAIN";		
+array_push($UPLOAD_FAILED,$tmp);
+
+$MARK_FAILED = array();
+$tmp["response"] 	= "FAILED TO MARK PRESENT, OLD IMAGE REVERTED, TRY AGAIN!";		
+array_push($MARK_FAILED,$tmp);
+
+$MARK_FAILED_NO_RET = array();
+$tmp["response"] 	= "FAILED TO MARK PRESENT, OLD IMAGE LOST, TRY AGAIN!";		
+array_push($MARK_FAILED_NO_RET,$tmp);
+
 $UPLOAD_SUCCESS = array();
-$tmp["response"] 	= "IMAGE UPLOADED SUCCESSFULLY!";		
+$tmp["response"] 	= "IMAGE UPLOADED & STUDENT MARKED PRESENT!";		
 array_push($UPLOAD_SUCCESS,$tmp);
+
+$DB_CONN_ERROR = array();
+$tmp["response"] 	= "FAILED TO CONNECT TO MYSQL!";		
+array_push($DB_CONN_ERROR,$tmp);
+
+$MARK_ABSENT_FAILED = array();
+$tmp["response"] 	= "FAILED TO MARK ABSENT, TRY AGAIN!";		
+array_push($MARK_ABSENT_FAILED,$tmp);
+
+$MARK_ABSENT_SUCCESS = array();
+$tmp["response"] 	= "STUDENT WAS MARKED ABSENT!";		
+array_push($MARK_ABSENT_SUCCESS,$tmp);
+
 
 
 // authenticate
@@ -43,6 +68,55 @@ function attempt_authentication($ID, $password){
 	// 	return $authentication_result;
 	// }
 	
+}
+
+// authenticate
+function get_professor_current_course($ID, $password){
+	$path =  "php get_professor_current_course.php $ID $password"; 
+
+	$authentication_result =  exec($path);
+
+	$authentication_result = json_decode($authentication_result, true);
+
+	$value = isset($authentication_result[0]["response"]) ? "NO_DATA" : $authentication_result[0]["classID"];
+	return $value;
+	// if(!$authentication_result ){
+	// 	$authentication_result = $authentication_result[0]["ID"];
+	// 	echo $authentication_result[0]["ID"];
+	// 	if($ID == $authentication_result){
+	// 		return "AUTH_SUCCESS";
+	// 	}
+	// }else if ($authentication_result[0]["response"]){
+	// 	$authentication_result =  $authentication_result[0]["response"];
+	// 	return $authentication_result;
+	// }
+	
+}
+
+function get_student_current_course($ID, $password) {
+    $path = "php retreive_student_info.php $ID $password";
+    
+    $authentication_result = exec($path);
+    
+    $authentication_result = json_decode($authentication_result, true);
+    
+    $value = isset ($authentication_result[0]["response"]) ? "NO_DATA" :
+        $authentication_result[0]["classID"];
+    
+    return $value;
+}
+
+function get_student_presence($ID, $password) {
+    $path = "php retreive_student_info.php $ID $password";
+    
+    $authentication_result = exec($path);
+    
+    $authentication_result = json_decode($authentication_result, true);
+    
+    $value = isset ($authentication_result[0]["response"]) ? "NO_DATA" :
+        $authentication_result[0]["present"];
+    
+    return $value;
 }
 
 function getCLassTime(){
