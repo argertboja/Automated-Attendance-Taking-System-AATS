@@ -1,8 +1,12 @@
 package bilkentcs492.aats;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,5 +37,26 @@ public class StudentActivity extends AppCompatActivity {
             present.setVisibility(View.GONE);
             absent.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.mybutton) {
+            Intent logout = new Intent(StudentActivity.this, LoginActivity.class);
+            Toast.makeText(getApplicationContext(), "Logging Out", Toast.LENGTH_LONG).show();
+            startActivity(logout);
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

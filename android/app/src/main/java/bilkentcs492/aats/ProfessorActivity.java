@@ -13,6 +13,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
@@ -20,6 +21,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -45,6 +49,11 @@ import java.util.Objects;
 
 public class ProfessorActivity extends AppCompatActivity {
 
+    TextView presentNum;
+    TextView absentNum;
+    TextView totalNum;
+    TextView percentage_num;
+    ProgressBar progressBar;
     private GridView gridView;
     Professor professor;
     private StudentsGridViewAdaptor adapter;
@@ -52,6 +61,7 @@ public class ProfessorActivity extends AppCompatActivity {
     ArrayList<ImageItem> studentList;
     private String objection_picture_path;
     ArrayList<ImageItem> items;
+    private String objection_picutre_base64;
     private int number_students_present;
     private int number_students_absent;
     private int number_students_total;
@@ -75,12 +85,12 @@ public class ProfessorActivity extends AppCompatActivity {
         }
         EditText searchBar = (EditText) findViewById(R.id.search_bar) ;
         TextView courseID = findViewById(R.id.course_ID);
-        TextView presentNum = findViewById(R.id.present_num);
-        TextView absentNum = findViewById(R.id.absent_num);
-        TextView totalNum = findViewById(R.id.total_num);
-        TextView percentage_num = findViewById(R.id.percentage_num);
+        presentNum = findViewById(R.id.present_num);
+        absentNum = findViewById(R.id.absent_num);
+        totalNum = findViewById(R.id.total_num);
+        percentage_num = findViewById(R.id.percentage_num);
         TextView date = findViewById(R.id.date);
-        ProgressBar progressBar = findViewById(R.id.progressBar);
+        progressBar = findViewById(R.id.progressBar);
 
         //set up grid view data
         gridView = (GridView) findViewById(R.id.grid_view);
@@ -238,6 +248,8 @@ public class ProfessorActivity extends AppCompatActivity {
             byte [] byte_arr = stream.toByteArray();
             final String image_str= new String(android.util.Base64.encode(byte_arr, android.util.Base64.DEFAULT));
 
+            objection_picutre_base64 = image_str;
+
             // new thread because doing a HTTP request
             Thread t = new Thread(new Runnable() {
 
@@ -375,23 +387,55 @@ public class ProfessorActivity extends AppCompatActivity {
     }
 
     /**
-     *
+     * Update text view-s and progress bars accordingly
      * @param present : if true : mark objection-making student as present, else mark him as absent
      */
     private void updatePresenceOnUI(boolean present){
         int index = -1;
-        for (int i = 0; i < items.size(); i++){
-            if(items.get(i).getStudentID().equals(student_objection_ID)){
-                index = i;
-                break;
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).getStudentID().equals(student_objection_ID)) {
+                    index = i;
+                }
             }
-        }
+
         if(index > -1) {
             if (present) {
                 items.get(index).setPresent(true);
+                if(!(number_students_present == number_students_total) ) {
+                    number_students_present++;
+                    number_students_absent--;
+
+                    professor.setNum_present_students(number_students_present);
+                    professor.setNum_absent_students(number_students_absent);
+                    professor.setAttendance_percentage();
+                    percentage_ratio = professor.getAttendance_percentage();
+                    items.get(index).setImage(objection_picutre_base64);
+                }
+
             } else {
                 items.get(index).setPresent(false);
+                if(!(number_students_absent == number_students_total) ) {
+                    number_students_present--;
+                    number_students_absent++;
+                    professor.setNum_present_students(number_students_present);
+                    professor.setNum_absent_students(number_students_absent);
+                    professor.setAttendance_percentage();
+                    percentage_ratio = professor.getAttendance_percentage();
+                }
+
             }
+            presentNum.setText(String.valueOf(number_students_present));
+            absentNum.setText(String.valueOf(number_students_absent));
+            totalNum.setText(String.valueOf(number_students_total));
+            String ratio = percentage_ratio + "%";
+            percentage_num.setText(ratio);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                progressBar.setProgress(percentage_ratio,true);
+            }else{
+                progressBar.setProgress(percentage_ratio);
+            }
+
+
         }
     }
 
@@ -423,5 +467,24 @@ public class ProfessorActivity extends AppCompatActivity {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.mybutton) {
+            Intent logout = new Intent(ProfessorActivity.this, LoginActivity.class);
+            Toast.makeText(getApplicationContext(), "Logging Out", Toast.LENGTH_LONG).show();
+            startActivity(logout);
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
