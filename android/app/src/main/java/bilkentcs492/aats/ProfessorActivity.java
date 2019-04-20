@@ -25,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
@@ -54,6 +55,7 @@ public class ProfessorActivity extends AppCompatActivity {
     TextView totalNum;
     TextView percentage_num;
     ProgressBar progressBar;
+    EditText searchBar;
     private GridView gridView;
     Professor professor;
     private StudentsGridViewAdaptor adapter;
@@ -67,8 +69,8 @@ public class ProfessorActivity extends AppCompatActivity {
     private int number_students_total;
     private int percentage_ratio;
     private static final int REQUEST_IMAGE_CAPTURE  = 1;
-    private static final int BITMAP_SMALL_WIDTH     = 1200;
-    private static final int BITMAP_SMALL_HEIGHT    = 1600;
+    private static final int BITMAP_SMALL_WIDTH     = 1000;
+    private static final int BITMAP_SMALL_HEIGHT    = 1200;
     private final String MARK_ABSENT_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/mark_student_absent.php";
     private final String UPLOAD_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/upload_image.php";
 
@@ -83,7 +85,7 @@ public class ProfessorActivity extends AppCompatActivity {
         if(professor == null){
             Log.e("NULL","nullllll");
         }
-        EditText searchBar = (EditText) findViewById(R.id.search_bar) ;
+        searchBar = (EditText) findViewById(R.id.search_bar) ;
         TextView courseID = findViewById(R.id.course_ID);
         presentNum = findViewById(R.id.present_num);
         absentNum = findViewById(R.id.absent_num);
@@ -157,31 +159,42 @@ public class ProfessorActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View v, final int position, long id) {
             final String clicked_ID = studentList.get(position).getStudentID();
-            new AlertDialog.Builder(context)
-                    .setTitle("Mark Presence")
-                    .setMessage("Mark Student with id : " + clicked_ID + " as ?")
+            AlertDialog.Builder builder =  new AlertDialog.Builder(context);
+
+                    builder.setTitle("Mark Presence");
+                    builder.setMessage("Mark Student with id : " + clicked_ID + " as ?");
 
                     // Specifying a listener allows you to take an action before dismissing the dialog.
                     // The dialog is automatically dismissed when a dialog button is clicked.
-                    .setPositiveButton(R.string.present, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(context, "Take a Picture", Toast.LENGTH_SHORT).show();
-                            // take a picture here
-                            student_objection_ID = clicked_ID;
-                            dispatchTakePictureIntent();
-                        }
-                    })
-
-                    .setNegativeButton(R.string.absent, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        student_objection_ID = clicked_ID;
-                        markStudentAbsent();
-                        }
-                    })
+                    if(studentList.get(position).isPresent()){
+                         builder.setNegativeButton(R.string.absent, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                student_objection_ID = clicked_ID;
+                                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                                if (imm != null) {
+                                    imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                                }
+                                markStudentAbsent();
+                            }
+                        });
+                    }else{
+                        builder.setPositiveButton(R.string.present, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(context, "Take a Picture of the student", Toast.LENGTH_SHORT).show();
+                                // take a picture here
+                                student_objection_ID = clicked_ID;
+                                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                                if (imm != null) {
+                                    imm.hideSoftInputFromWindow(searchBar.getWindowToken(), 0);
+                                }
+                                dispatchTakePictureIntent();
+                            }
+                        });
+                    }
 
                     // A null listener allows the button to dismiss the dialog and take no further action.
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+                    builder.setIcon(android.R.mipmap.sym_def_app_icon);
+                    builder.show();
         }
 
 
@@ -463,6 +476,7 @@ public class ProfessorActivity extends AppCompatActivity {
      */
     private Bitmap scaleDownToRatio(Bitmap bitmap){
         Matrix m = new Matrix();
+//        Log.d("w and h :",bitmap.getWidth()+"__"+  bitmap.getHeight() );
         m.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), new RectF(0, 0, BITMAP_SMALL_WIDTH, BITMAP_SMALL_HEIGHT), Matrix.ScaleToFit.CENTER);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
     }
@@ -483,7 +497,7 @@ public class ProfessorActivity extends AppCompatActivity {
             Intent logout = new Intent(ProfessorActivity.this, LoginActivity.class);
             Toast.makeText(getApplicationContext(), "Logging Out", Toast.LENGTH_LONG).show();
             startActivity(logout);
-
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

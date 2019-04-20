@@ -102,31 +102,6 @@ function check_if_student($id , $connection ) {
 }
 
 
-// // function takes connection object, query and returns result or -1 if something goes wrong
-// function returnStudentData($connection, $stmt){
-// 	global $AUTH_FAILED;
-// 	$stmt->execute();
-// 	$output = array();
-// 	$result = $stmt->bind_result($id, $name, $surname, $email, $password, $facevector, $present);
-// 	if ( $result){
-// 		while ($stmt->fetch()) {
-// 		    $tmp = array();
-// 		    $tmp["ID"] 			= $id;
-// 		    $tmp["name"]		= $name;
-// 		    $tmp["surname"] 	= $surname;
-// 			$tmp["email"] 		= $email;
-// 			$tmp["password"]	= $password;
-// 		    $tmp["facevector"] 	= $facevector;
-// 		    $tmp["present"] 	= $present;
-// 			array_push($output, $tmp);
-// 		}		
-// 		if( empty($output)) {
-// 			// print(json_encode($AUTH_FAILED));
-// 			return -1;
-// 		}
-// 	 	return $output;
-// 	}else{	print(json_encode($AUTH_FAILED));/*print("query failed at run_query() student :: ");*/  return -1; }
-// }
 
 // function takes connection object, query and returns result or -1 if something goes wrong
 function returnProfessorData($connection, $stmt){

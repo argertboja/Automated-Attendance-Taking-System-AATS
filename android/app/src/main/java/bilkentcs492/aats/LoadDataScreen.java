@@ -1,5 +1,7 @@
 package bilkentcs492.aats;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ public class LoadDataScreen extends AppCompatActivity {
     private final String TYPE_PROFESSOR = "-1";
     private final String TYPE_STUDENT_ABSENT = "0";
     private final String TYPE_STUDENT_PRESENT = "1";
+    private final String NO_COURSES_NOW = "NO_DATA";
 
     //profi
     private static final int REQUEST_IMAGE_CAPTURE  = 1;
@@ -29,7 +32,7 @@ public class LoadDataScreen extends AppCompatActivity {
     private final String GET_STUDENT_LIST_URL       = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_professors_course.php";
     private String objection_picture_path;
     Professor professor;
-
+    AlertDialog.Builder dialog_builder;
     // Student
     Student student;
     private final String GET_STUDENT_INFO           = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_student_info.php";
@@ -39,12 +42,38 @@ public class LoadDataScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_load_data_screen);
 
+        dialog_builder = new AlertDialog.Builder(LoadDataScreen.this);
+
+        dialog_builder.setCancelable(false);
+
         userType        = (getIntent().getExtras().getString("user_presence"));
         if(userType.equals(TYPE_PROFESSOR)) {
             ProfessorTask task =  new ProfessorTask();
+            dialog_builder.setTitle("Dear "+ (getIntent().getExtras().getString("user_name"))  +" Hocam");
+            dialog_builder.setMessage("NO COURSES FOR YOU AT THIS MOMENT");
+
+            dialog_builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                    Intent intent = new Intent(LoadDataScreen.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
             task.execute("");
         }else if(userType.equals(TYPE_STUDENT_ABSENT) || userType.equals(TYPE_STUDENT_PRESENT) ){
             StudentTask studentTask = new StudentTask();
+            dialog_builder.setTitle("Dear "+ (getIntent().getExtras().getString("user_name"))  +" ");
+            dialog_builder.setMessage("NO COURSES FOR YOU AT THIS MOMENT");
+
+            dialog_builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.dismiss();
+                    Intent intent = new Intent(LoadDataScreen.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            });
             studentTask.execute("");
         }
 
@@ -61,7 +90,7 @@ public class LoadDataScreen extends AppCompatActivity {
             String user_presence    = (getIntent().getExtras().getString("user_presence"));
             String  current_course = (getIntent().getExtras().getString("professor_current_course"));
 
-            if(user_id != null && user_password != null && user_email != null && user_name != null && user_surname != null && user_presence != null) {
+            if( user_id != null && user_password != null && user_email != null && user_name != null && user_surname != null && user_presence != null && current_course != null && !current_course.equals(NO_COURSES_NOW)) {
                 student = new Student(user_id, user_password, user_name, user_surname, user_email);
                 student.setCurrentCourse(current_course);
                 student.setPresent(user_presence);
@@ -81,6 +110,7 @@ public class LoadDataScreen extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }else{
+                dialog_builder.show();
                 Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -101,8 +131,9 @@ public class LoadDataScreen extends AppCompatActivity {
             String user_email      = (getIntent().getExtras().getString("user_email"));
             String user_name       = (getIntent().getExtras().getString("user_name"));
             String user_surname    = (getIntent().getExtras().getString("user_surname"));
+
             String  current_course = (getIntent().getExtras().getString("professor_current_course"));
-            if(user_id != null && user_password != null && user_email !=null && user_name != null && user_surname != null && current_course != null) {
+            if(user_id != null && user_password != null && user_email !=null && user_name != null && user_surname != null && current_course != null && !(current_course.equals(NO_COURSES_NOW)) ) {
                 ArrayList<ImageItem> listOfStudents = getStudentData(user_id, user_password);
                 professor = new Professor(user_id, user_password, user_name, user_surname, user_email,listOfStudents);
                 (professor).setCurrentCourse(current_course);
@@ -134,14 +165,15 @@ public class LoadDataScreen extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }else{
-                Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText( getApplicationContext(), "NO COURSES FOR YOU NOW!" , Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(LoadDataScreen.this, LoginActivity.class);
-                        startActivity(intent);
-                    }
-                });
+
+                dialog_builder.show();
+
+//                Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                });
             }
         }
 
