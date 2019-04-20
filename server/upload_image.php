@@ -25,7 +25,7 @@
 					/* Prepare an update statement */
 					$query = "UPDATE students SET present = 1 WHERE ID = ? ;";
 					$stmt = $connection->prepare($query);
-					if(!$stmt){ print(json_encode($MARK_FAILED_NO_RET)); exit; }	
+					if(!$stmt){ print(json_encode($MARK_FAILED_NO_RET));  mysqli_close($connection); exit; }	
 					$stmt->bind_param("i", $studentID);
 
 					/* Execute the statement */
@@ -52,5 +52,6 @@
 	}else{
 		print(json_encode($UPLOAD_AUTH));
 	}
+ mysqli_close($connection);
 ?>
 

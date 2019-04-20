@@ -39,7 +39,7 @@ if( !(attempt_authentication($ID, $password)  == "AUTH_FAILED") ){ // IF auth do
 		    }
 		     print(json_encode($output)); // PRINTS LIST OF ALL ENTRIES IN JSON FORMAT
 		 } else {
-		    print(json_encode($NO_DATA));
+		    print(json_encode($EMPTY));
 		 }
 }else{
 	print(json_encode($AUTH_FAILED));

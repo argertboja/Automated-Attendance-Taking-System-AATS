@@ -45,6 +45,28 @@ $MARK_ABSENT_SUCCESS = array();
 $tmp["response"] 	= "STUDENT WAS MARKED ABSENT!";		
 array_push($MARK_ABSENT_SUCCESS,$tmp);
 
+// create failure json message
+$AUTH_FAILED_DEVICE = array();
+$tmp["response"] 	= "AUTH_FAILED_RASPBERRY";
+array_push($AUTH_FAILED_DEVICE,$tmp);
+
+// create failure json message
+$AUTH_DEVICE_SUCCESS = array();
+$tmp["response"] 	= "AUTH_SUCCESS_RASPBERRY";
+array_push($AUTH_DEVICE_SUCCESS,$tmp);
+
+// create failure json message
+$EMPTY_PARAM = array();
+$tmp["response"] 	= "EMPTY_PARAMS_GIVEN";
+array_push($EMPTY_PARAM,$tmp);
+
+$FAILED_TO_MARK = array();
+$tmp["response"] 	= "FAIL_TO_MARK_SOME_STUDENTS";
+array_push($FAILED_TO_MARK,$tmp);
+
+$ALL_STUDENTS_MARKED = array();
+$tmp["response"] 	= "ALL_STUDENTS_MARKED_CORRECTLY";
+array_push($ALL_STUDENTS_MARKED,$tmp);
 
 
 // authenticate
@@ -57,17 +79,23 @@ function attempt_authentication($ID, $password){
 	
 	$value = isset($authentication_result[0]["response"]) ? "AUTH_FAILED" : "AUTH_SUCCESS";
 	return $value;
-	// if(!$authentication_result ){
-	// 	$authentication_result = $authentication_result[0]["ID"];
-	// 	echo $authentication_result[0]["ID"];
-	// 	if($ID == $authentication_result){
-	// 		return "AUTH_SUCCESS";
-	// 	}
-	// }else if ($authentication_result[0]["response"]){
-	// 	$authentication_result =  $authentication_result[0]["response"];
-	// 	return $authentication_result;
-	// }
+
+}
+
+// authenticate
+function attempt_authentication_raspberries($ID, $password){
+	$path =  "php login_device.php $ID $password";
+	$authentication_result =  exec($path);
+
+	$authentication_result = json_decode($authentication_result, true);
 	
+	$value = isset($authentication_result[0]["response"]) ? $authentication_result[0]["response"] : $authentication_result[0]["location"];
+	// print ($value);
+	return $value;
+
+	// if ($value == "AUTH_SUCCESS_RASPBERRY") { return true;}
+	// else if ($value == "AUTH_FAILED_RASPBERRY") { return false;}
+	// return false;
 }
 
 // authenticate
@@ -80,16 +108,7 @@ function get_professor_current_course($ID, $password){
 
 	$value = isset($authentication_result[0]["response"]) ? "NO_DATA" : $authentication_result[0]["classID"];
 	return $value;
-	// if(!$authentication_result ){
-	// 	$authentication_result = $authentication_result[0]["ID"];
-	// 	echo $authentication_result[0]["ID"];
-	// 	if($ID == $authentication_result){
-	// 		return "AUTH_SUCCESS";
-	// 	}
-	// }else if ($authentication_result[0]["response"]){
-	// 	$authentication_result =  $authentication_result[0]["response"];
-	// 	return $authentication_result;
-	// }
+
 	
 }
 
@@ -100,8 +119,7 @@ function get_student_current_course($ID, $password) {
     
     $authentication_result = json_decode($authentication_result, true);
     
-    $value = isset ($authentication_result[0]["response"]) ? "NO_DATA" :
-        $authentication_result[0]["classID"];
+    $value = isset ($authentication_result[0]["response"]) ? "NO_DATA" : $authentication_result[0]["classID"];
     
     return $value;
 }

@@ -29,7 +29,7 @@ if($auth_response  == "AUTH_SUCCESS"){
 		// echo $currentDayOfWeek;
 
 		// $professorID = (int)$_REQUEST['professor_id'];
-		 $sql = "SELECT DISTINCT classID from class_of_professor_in_time where professorID = $professorID AND day = '$currentDayOfWeek' AND time ='$currentTime'";
+		 $sql = "SELECT DISTINCT ID from class_of_professor_in_time where professorID = $professorID AND day = '$currentDayOfWeek' AND time ='$currentTime'";
 		 $result = mysqli_query($connection, $sql);
 		 $output = array();
 		 if (mysqli_num_rows($result) > 0) {
@@ -38,13 +38,15 @@ if($auth_response  == "AUTH_SUCCESS"){
 		    }
 		     // print(json_encode($output));
 		 } else {
-		    print(json_encode($NO_DATA));
+		    print(json_encode($EMPTY));
+		    mysqli_close($connection);
+		    exit;
 		 }
 
-		if($output[0]["classID"]){
-		  	$courseName = (string) $output[0]["classID"];
+		if($output[0]["ID"]){
+		  	$courseName = (int) $output[0]["ID"];
 
-		 	$sql = "SELECT DISTINCT studentID, present from students_in_class WHERE classID =  '$courseName' ";
+		 	$sql = "SELECT DISTINCT studentID, present from students_in_class WHERE classID =  $courseName ";
 	 		$result = mysqli_query($connection, $sql);
 		 	$output = array();
 		 	if (mysqli_num_rows($result) > 0) {
@@ -57,21 +59,18 @@ if($auth_response  == "AUTH_SUCCESS"){
 						$data = file_get_contents($path);
 						$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
 					 	$tmp["base64"]	= $base64;
-						array_push($output, $tmp);
-				
+						array_push($output, $tmp);				
 			    }	
 			    print(json_encode($output));
 		 	} else {
-			   print(json_encode($NO_DATA));
+			   print(json_encode($EMPTY));
 		 	}
 	 	}else{
-	 		 print(json_encode($NO_DATA));
+	 		 print(json_encode($EMPTY));
 	 	}
 }else if ($auth_response  == "AUTH_FAILED"){
 	print(json_encode($AUTH_FAILED));
 }
-echo $auth_response ;
-
  mysqli_close($connection);
 
 
