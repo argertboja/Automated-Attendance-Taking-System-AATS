@@ -19,6 +19,8 @@ public class Professor  extends User implements Serializable {
     private int num_absent_students;
     private int num_total_students;
     private int attendance_percentage;
+    private String current_hour;
+
     private ArrayList<ImageItem> listOfCurrentStudents;
 
     Professor(String user_ID,String user_password,String user_name,String user_surname,String user_email, ArrayList<ImageItem> listOfCurrentStudents  ){
@@ -28,6 +30,14 @@ public class Professor  extends User implements Serializable {
 
     Professor(String user_ID,String user_password,String user_name,String user_surname,String user_email  ){
         super(user_ID,user_password,user_name,user_surname,user_email);
+    }
+
+    public String getCurrent_hour() {
+        return current_hour;
+    }
+
+    public void setCurrent_hour(String current_hour) {
+        this.current_hour = current_hour;
     }
 
     String getCurrentCourse() {

@@ -25,11 +25,13 @@ public class StudentActivity extends AppCompatActivity {
         }
         TextView accountOwner = findViewById(R.id.accountOwner);
         TextView studentCourse = findViewById(R.id.student_current_course);
+        TextView student_current_hour = findViewById(R.id.current_hour_student);
         ImageView present = findViewById(R.id.present);
         ImageView absent = findViewById(R.id.absent);
 
         accountOwner.setText("Welcome: " + student.getUser_name() +" "+ student.getUser_surname() + "!");
         studentCourse.setText("Course: " + student.getCurrentCourse());
+        student_current_hour.setText("Current Hour: "+ student.getCurrent_hour());
         if (student.isPresent().equals("1")) {
             present.setVisibility(View.VISIBLE);
             absent.setVisibility(View.GONE);

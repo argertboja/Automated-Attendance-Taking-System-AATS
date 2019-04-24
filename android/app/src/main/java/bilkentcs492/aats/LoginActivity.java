@@ -64,15 +64,6 @@ public class LoginActivity extends AppCompatActivity  {
         // Set up the login form.
         mIDView = (AutoCompleteTextView) findViewById(R.id.id);
 
-//      add a button to skip loggin in
-        Button hack_btn = findViewById(R.id.hack_button);
-        hack_btn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent skip = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(skip);
-            }
-        });
-
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -213,8 +204,8 @@ public class LoginActivity extends AppCompatActivity  {
         private String user_presence;
         private String user_password;
         private String professor_current_course;
-        private String student_current_course;
-        private String URL = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/login.php";
+        private String current_hour;
+        private String URL = "https://bilmenu.com/aats/php/login.php";
 
         UserLoginTask(String id, String password) {
             this.id = id;
@@ -251,7 +242,7 @@ public class LoginActivity extends AppCompatActivity  {
                 mBundle.putString("user_surname", user_surname);
                 mBundle.putString("user_presence", user_presence);
                 mBundle.putString("professor_current_course", professor_current_course);
-
+                mBundle.putString("current_hour", current_hour);
 
                 login_success.putExtras(mBundle);
                 startActivity(login_success);
@@ -315,7 +306,16 @@ public class LoginActivity extends AppCompatActivity  {
                         }
                     });
                     return false; // authentication failed
-                } else{
+                }else if(auth_result.equals("FAILED TO CONNECT TO MYSQL!")){
+                    Log.e("not AUTHENTICATED", "wrong credentials");
+                    LoginActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText( LoginActivity.this, "DATABASE CONNECTION ERROR, TRY LATER!", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    return false; // authentication failed
+                }else{
                     try {
                         if(json_data.optString("name") == null){
                             LoginActivity.this.runOnUiThread(new Runnable() {
@@ -331,14 +331,19 @@ public class LoginActivity extends AppCompatActivity  {
                         user_surname = json_data.getString("surname");
                         user_email = json_data.getString("email");
                         user_password = json_data.getString("password");
-
+                        current_hour = json_data.getString("current_hour");
                         if (!json_data.getString("present").equals("-1")) {
                             user_presence = json_data.getString("present");
 //                            Log.e("student__",user_presence);
                             professor_current_course = json_data.optString("classID");
                         } else {
+
                             user_presence = json_data.getString("present"); // user is professor, no presence
                             professor_current_course = json_data.optString("classID");
+                            Log.d ("pres:","" + user_presence );
+                            Log.d ("user_name:","" + user_name );
+                            Log.d ("user_surname:","" + user_surname );
+                            Log.d ("current_course:","" + professor_current_course );
 //                            Log.e("professor__",professor_current_course);
                         }
                         return true;

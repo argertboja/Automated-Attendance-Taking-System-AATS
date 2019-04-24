@@ -10,6 +10,43 @@
     tools:context=".ProfessorCourseViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/professor_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Professor : "
+            android:textColor="#327E02"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/professor_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Degerli"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/professor_surname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:text="Hocamiz"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -29,14 +66,35 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="CS 492-1"
-            android:textColor="#327E02"
+            android:textColor="#000000"
             android:textSize="16sp"
             android:textStyle="bold"
             />
     </LinearLayout>
 
-
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/cur_hour_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Hour : "
+            android:textColor="#327E02"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+        <TextView
+            android:id="@+id/current_hour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Degerli"
+            android:textColor="#000000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            />
+    </LinearLayout>
     <ProgressBar
         android:id="@+id/progressBar"
         style="@style/CustomProgressBar"

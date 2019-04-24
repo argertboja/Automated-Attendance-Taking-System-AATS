@@ -27,11 +27,21 @@
             android:maxLines="1"
             android:textSize="16sp"
             android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/current_hour_student"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Hour: CS000"
+            android:maxLines="1"
+            android:textSize="16sp"
+            android:textStyle="bold" />
         <TextView
             android:id="@+id/attendance_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Attendance Status: "
+            android:text="Attendance Status Shown Below: "
             android:maxLines="1"
             android:textSize="16sp"
             android:textStyle="bold" />

@@ -28,14 +28,14 @@ public class LoadDataScreen extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE  = 1;
     private static final int BITMAP_SMALL_WIDTH     = 1200;
     private static final int BITMAP_SMALL_HEIGHT    = 1600;
-    private final String UPLOAD_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/upload_image.php";
-    private final String GET_STUDENT_LIST_URL       = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_professors_course.php";
-    private String objection_picture_path;
+//    private final String UPLOAD_URL                 = "https://bilmenu.com/aats/php/upload_image.php";
+    private final String GET_STUDENT_LIST_URL       = "https://bilmenu.com/aats/php/retrieve_professors_course.php";
+//    private String objection_picture_path;
     Professor professor;
     AlertDialog.Builder dialog_builder;
     // Student
     Student student;
-    private final String GET_STUDENT_INFO           = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_student_info.php";
+//    private final String GET_STUDENT_INFO           = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/retrieve_student_info.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,13 +87,14 @@ public class LoadDataScreen extends AppCompatActivity {
             String user_email      = (getIntent().getExtras().getString("user_email"));
             String user_name       = (getIntent().getExtras().getString("user_name"));
             String user_surname    = (getIntent().getExtras().getString("user_surname"));
-            String user_presence    = (getIntent().getExtras().getString("user_presence"));
+            String user_presence   = (getIntent().getExtras().getString("user_presence"));
             String  current_course = (getIntent().getExtras().getString("professor_current_course"));
-
+            String current_hour    = (getIntent().getExtras().getString("current_hour"));
             if( user_id != null && user_password != null && user_email != null && user_name != null && user_surname != null && user_presence != null && current_course != null && !current_course.equals(NO_COURSES_NOW)) {
                 student = new Student(user_id, user_password, user_name, user_surname, user_email);
                 student.setCurrentCourse(current_course);
                 student.setPresent(user_presence);
+                student.setCurrent_hour(current_hour);
                 return true;
             }
             return false;
@@ -131,7 +132,7 @@ public class LoadDataScreen extends AppCompatActivity {
             String user_email      = (getIntent().getExtras().getString("user_email"));
             String user_name       = (getIntent().getExtras().getString("user_name"));
             String user_surname    = (getIntent().getExtras().getString("user_surname"));
-
+            String current_hour    = (getIntent().getExtras().getString("current_hour"));
             String  current_course = (getIntent().getExtras().getString("professor_current_course"));
             if(user_id != null && user_password != null && user_email !=null && user_name != null && user_surname != null && current_course != null && !(current_course.equals(NO_COURSES_NOW)) ) {
                 ArrayList<ImageItem> listOfStudents = getStudentData(user_id, user_password);
@@ -143,6 +144,8 @@ public class LoadDataScreen extends AppCompatActivity {
                     ( professor).setNum_total_students(listOfStudents.size());
                     ( professor).setNum_absent_students(((Professor) professor).getNum_total_students() - ((Professor) professor).getNum_present_students());
                     ( professor).setAttendance_percentage(); // set within the class
+                    ( professor).setCurrent_hour(current_hour); // set within the class
+
                     Log.e("empty__",(professor.getCurrentCourse()) + "" );
                     Log.e("empty__",(professor.getNum_present_students()) + "" );
                     Log.e("empty__",(professor.getNum_absent_students()) + "" );
@@ -215,7 +218,12 @@ public class LoadDataScreen extends AppCompatActivity {
                             String studentID = json_data.optString("studentID");
                             String base64 = json_data.optString("base64");
                             base64 = base64.substring(base64.indexOf(",") + 1);
-                            boolean present = (Integer.parseInt(json_data.optString("present")) == 1) ;
+
+                            String presenc = json_data.optString("present");
+                            if(presenc == null || presenc.equals("")  || base64.equals("") || studentID.equals("") ){
+                                break;
+                            }
+                            boolean present = (Integer.parseInt(presenc) == 1) ;
                             imageItems.add(new ImageItem(base64, studentID, present));
                         } catch (JSONException e) {
                             Log.e("JSONException", "Error Parsing Student Data");

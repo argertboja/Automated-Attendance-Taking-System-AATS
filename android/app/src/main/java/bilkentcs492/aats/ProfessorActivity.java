@@ -54,6 +54,9 @@ public class ProfessorActivity extends AppCompatActivity {
     TextView absentNum;
     TextView totalNum;
     TextView percentage_num;
+    TextView professor_name;
+    TextView professor_surnname;
+    TextView current_hour;
     ProgressBar progressBar;
     EditText searchBar;
     private GridView gridView;
@@ -71,8 +74,8 @@ public class ProfessorActivity extends AppCompatActivity {
     private static final int REQUEST_IMAGE_CAPTURE  = 1;
     private static final int BITMAP_SMALL_WIDTH     = 1000;
     private static final int BITMAP_SMALL_HEIGHT    = 1200;
-    private final String MARK_ABSENT_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/mark_student_absent.php";
-    private final String UPLOAD_URL                 = "http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/upload_image.php";
+    private final String MARK_ABSENT_URL                 = "https://bilmenu.com/aats/php/mark_student_absent.php";
+    private final String UPLOAD_URL                 = "https://bilmenu.com/aats/php/upload_image.php";
 
 
     @Override
@@ -93,6 +96,9 @@ public class ProfessorActivity extends AppCompatActivity {
         percentage_num = findViewById(R.id.percentage_num);
         TextView date = findViewById(R.id.date);
         progressBar = findViewById(R.id.progressBar);
+        professor_name = findViewById(R.id.professor_name);
+        professor_surnname = findViewById(R.id.professor_surname);
+        current_hour = findViewById(R.id.current_hour);
 
         //set up grid view data
         gridView = (GridView) findViewById(R.id.grid_view);
@@ -135,7 +141,9 @@ public class ProfessorActivity extends AppCompatActivity {
         absentNum.setText(String.valueOf(number_students_absent));
         totalNum.setText(String.valueOf(number_students_total));
         percentage_num.setText(String.valueOf(percentage_ratio));
-
+        professor_name.setText(professor.getUser_name());
+        professor_surnname.setText(professor.getUser_surname());
+        current_hour.setText(professor.getCurrent_hour());
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         String formattedDate = df.format(c);
