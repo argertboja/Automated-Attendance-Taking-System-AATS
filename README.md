@@ -28,22 +28,23 @@ to still be counted as present by letting their professor know that they were pr
 
 ### USER INTERFACE
 
-Login View UI
-![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234003.jpg)
+<li>Login View UI </li>
+<li> ![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234003.jpg) </li>
+
+<li> Professor Main View UI </li>
+
+<li> ![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233852.jpg) </li>
+
+<li>Professor No Courses Now View UI </li>
+
+<li>![login_no_course_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234146.jpg) </li>
+
+<li>Student Main View UI</li>
 
 
-Professor Main View UI
-![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233852.jpg)
-
-
-Professor No Courses Now View UI
-![login_no_course_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234146.jpg)
-
-
-Student Main View UI
 ![login_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233954.jpg)
 
-Student No Courses Now View UI
-![login_no_course_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234117.jpg)
+<li>Student No Courses Now View UI</li>
+<li>![login_no_course_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234117.jpg)</li>
 
 
