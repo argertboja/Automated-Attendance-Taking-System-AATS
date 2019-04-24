@@ -1,17 +1,17 @@
 <?php
 
 /* 
- 2. MARK STUDENTS PRESENT/ABSENT FROM RASPBERRY (PRESENT ONLY, ABSENTS STAY ABSENT)
- LINK_TEST: https://bilmenu.com/aats/php/raspberry_mark_students_present.php?ID=770253&password=123&studentList=21500342:1,21500009:1,21503525:1
+ 2. UPDATE STUDENTS FACEVECTOR FROM RASPBERRY
+ LINK_TEST: http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/raspberry_update_student_facevector.php?ID=770253&password=123&studentList=21500342:1,21500009:1,21503525:1
 
  INPUT : ID = "770253"
  		password = "123"
  		studentList = "21500342:1,21500009:1,21503525:1" 
 
- OUTPUT : [{"response":"ALL_STUDENTS_MARKED_CORRECTLY"}]
+ OUTPUT : [{"response":"ALL_VECTORS_UPDATED_CORRECTLY"}]
 
  OTHER POSSIBLE OUTPUTS : [{"response":"AUTH_FAILED_RASPBERRY"}]
- 						  [{"response":"FAIL_TO_MARK_SOME_STUDENTS"}]
+ 						  [{"response":"FAIL_TO_UPDATE_SOME_VECTORS"}]
 */					
 
 include "convert_functions.php";
@@ -32,49 +32,34 @@ if( !($location == "AUTH_FAILED_RASPBERRY") ){
 	
 	$list_exploded = explode(",", $list_students);
 	$size_of_array = sizeof($list_exploded);
-
 	$result = array();
 	if($list_exploded && $list_exploded[0] != "" ){
 		$result = array();
 		for ( $i = 0; $i < $size_of_array; $i++){
 			$temp_list =  explode(":", $list_exploded[$i]);
 			if($temp_list && $list_exploded[0] != "" ){
-		    	$result[$temp_list[0]] = (int)$temp_list[1];
+		    	$result[$temp_list[0]] = $temp_list[1];
 	    	}
 		}
 
-		$total_marked = 0;
-
-		$keys = array_keys($result);
-		$arraySize = count($result);
-
-		for($i = 0; $i < $arraySize; $i++){
-		    // echo "<option value=\"".$keys[$i]."\">".$arrayToWalk[$keys[$i]]."</option>";
-			$studentID = (int) $keys[$i];
-			$presence = (int) $result[$keys[$i]];
-			 // echo $studentID . " = ";
-			 // echo $presence . '<br>' ;
-			/* Prepare an update statement */
-			$query = "UPDATE students SET present = ? WHERE ID = ?  ";
-			$stmt = $connection->prepare($query);
-			if(!$stmt){ print(json_encode($MARK_ABSENT_FAILED));  mysqli_close($connection);  exit; }	
-
-			$stmt->bind_param("ii", $presence, $studentID);
-
-			/* Execute the statement */
-			$status = $stmt->execute();
+		$total_updated = 0;
+		while(key($result) ){
+			$studentID = (int) key($result);
+			$facevector =  current($result);
+			// echo $studentID . " = ";
+			$sql = "UPDATE students SET facevector = '$facevector' , first_time = 1 WHERE ID = $studentID " ;
 			
-			if($status){
-				$total_marked++;
+			$retval =  mysqli_query($connection, $sql);
+			if($retval) {
+				$total_updated++;
 			}
-						
-			mysqli_stmt_close($stmt);
+			next($result);
 		}
 
-		if($total_marked == $size_of_array){
-			print(json_encode($ALL_STUDENTS_MARKED));
+		if($total_updated = $size_of_array){
+			print(json_encode($ALL_FACEVECTORS_UPDATED));
 		}else{
-			print(json_encode($FAILED_TO_MARK));
+			print(json_encode($FAILED_TO_UPDATE_FACEVECTOR));
 		}
 		mysqli_close($connection);
 

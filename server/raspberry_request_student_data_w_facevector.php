@@ -2,7 +2,7 @@
 <?php 
 /* 
  1. RETRIEVE STUDENT DATA FROM ID & PASSWORD 
- LINK_TEST: http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/raspberry_request_student_data.php?ID=770253&password=123
+ LINK_TEST: https://bilmenu.com/aats/php/raspberry_request_student_data_w_facevector.php?ID=770253&password=123
 
  INPUT : ID = "770253"
  		 password = "123"
@@ -22,7 +22,7 @@ include "convert_functions.php";
 $device_ID 		 = $_REQUEST['ID'];
 $device_password = $_REQUEST['password'];
 
-
+// echo $device_ID .  	$device_password;
 
 $currentTime = getCLassTime();
 $currentTime = "1540-1630";
@@ -30,33 +30,30 @@ $currentDayOfWeek = getDayOfWeek(); // uncomment for real demo phase
 $currentDayOfWeek = "Tuesday"; // hardcode according to db temporarily
 
 $location = attempt_authentication_raspberries($device_ID, $device_password);
-// print ($location);
+
 if( !($location == "AUTH_FAILED_RASPBERRY") ){
-	$connection = mysqli_connect("160.153.75.104","aats_admin","aats_admin123");
-	if (mysqli_connect_errno()) { print(json_encode($AUTH_FAILED_DEVICE)); exit; }
-    mysqli_select_db($connection,"AATS_Database");
+	$connection = mysqli_connect($DB_HOST, $DB_USER, $DB_PASSWORD);
+	if (mysqli_connect_errno())  {   print(json_encode($DB_CONN_ERROR));   exit;  }
+	mysqli_select_db($connection, $DB_NAME);
 	
 	$sql = "select * from students_in_class where day = '$currentDayOfWeek' and time = '$currentTime' and location = '$location' ;";
 	$result = mysqli_query($connection, $sql);
 	$output = array();
-	if (mysqli_num_rows($result) > 0) {
-	    while($row = mysqli_fetch_assoc($result)) {
-	    	$tmp = array();
-	    	$tmp["studentID"] =	$row["studentID"];
-	    	$tmp["facevector"] = $row["facevector"];
+	if($result){
+		if (mysqli_num_rows($result) > 0) {
+		    while($row = mysqli_fetch_assoc($result)) {
+		    	$tmp = array();
+		    	$tmp["studentID"] =	$row["studentID"];
+		    	$tmp["facevector"] = $row["facevector"];
+				array_push($output, $tmp);	
+		    }
+		     print(json_encode($output)); // PRINTS LIST OF ALL ENTRIES IN JSON FORMAT
+		} else {
+		    print(json_encode($EMPTY));
+		}
 
-	    	// get base64 image of student 
-	    	$filename = "/home/accentjanitorial/public_html/accentjanitorial.com/aats_admin/images/". $row["studentID"] . ".jpg";
-		    $file = file_get_contents($filename); 
-			$base_64_img = base64_encode($file);
-
-	    	$tmp["image"] = $base_64_img;
-			array_push($output, $tmp);	
-	    }
-	     print(json_encode($output)); // PRINTS LIST OF ALL ENTRIES IN JSON FORMAT
-	} else {
-	    print(json_encode($EMPTY));
-	}
+	  }
+	
 }else{
 	print(json_encode($AUTH_FAILED_DEVICE));
 }

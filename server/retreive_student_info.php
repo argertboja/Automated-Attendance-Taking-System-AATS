@@ -9,14 +9,10 @@ if (isset($argc)) {
   }
 }
 include "convert_functions.php";
-$connection = mysqli_connect("160.153.75.104","aats_admin","aats_admin123");
 
-if (mysqli_connect_errno())
-  {
-   echo "Failed to connect to MySQL: " . mysqli_connect_error();
-  }
-
-mysqli_select_db($connection,"AATS_Database");
+$connection = mysqli_connect($DB_HOST, $DB_USER, $DB_PASSWORD);
+if (mysqli_connect_errno())  {  print(json_encode($DB_CONN_ERROR));   exit;  }
+mysqli_select_db($connection, $DB_NAME);
 
 
 //ID AND PASWORD ARE ALWAYS NEEDED

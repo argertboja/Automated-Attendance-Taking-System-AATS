@@ -1,26 +1,21 @@
 <?php
 
 include "convert_functions.php";
-$connection = mysqli_connect("160.153.75.104","aats_admin","aats_admin123");
 
-if (mysqli_connect_errno())
-  {
-   echo "Failed to connect to MySQL: " . mysqli_connect_error();
-  }
-
-mysqli_select_db($connection,"AATS_Database");
+$connection = mysqli_connect($DB_HOST, $DB_USER, $DB_PASSWORD);
+if (mysqli_connect_errno())  {  print(json_encode($DB_CONN_ERROR));   exit;  }
+mysqli_select_db($connection, $DB_NAME);
 
 
 $ID = (string)$_REQUEST['ID'];
 $password = $_REQUEST['password'];
 $professorID = (int) $ID;
 
-$auth_response = attempt_authentication($ID, $password);
 
-if($auth_response  == "AUTH_SUCCESS"){
+if(attempt_authentication_professor_only($ID, $password)){
 		// set timezone to istanbul to receive current time ( to be exctended to other countries in the future)
 		date_default_timezone_set('Europe/Istanbul');
-		$parentPath = "/home/accentjanitorial/public_html/accentjanitorial.com/aats_admin/images/";
+		
 		$currentTime = getCLassTime();
 		$currentTime = "1540-1630";
 		$currentDayOfWeek = getDayOfWeek(); // uncomment for real demo phase
@@ -29,7 +24,7 @@ if($auth_response  == "AUTH_SUCCESS"){
 		// echo $currentDayOfWeek;
 
 		// $professorID = (int)$_REQUEST['professor_id'];
-		 $sql = "SELECT DISTINCT ID from class_of_professor_in_time where professorID = $professorID AND day = '$currentDayOfWeek' AND time ='$currentTime'";
+		 $sql = "SELECT DISTINCT classID from class_of_professor_in_time where professorID = $professorID AND day = '$currentDayOfWeek' AND time ='$currentTime'";
 		 $result = mysqli_query($connection, $sql);
 		 $output = array();
 		 if (mysqli_num_rows($result) > 0) {
@@ -43,18 +38,19 @@ if($auth_response  == "AUTH_SUCCESS"){
 		    exit;
 		 }
 
-		if($output[0]["ID"]){
-		  	$courseName = (int) $output[0]["ID"];
+		if($output[0]["classID"]){
+		  	$courseName = (int) $output[0]["classID"];
 
 		 	$sql = "SELECT DISTINCT studentID, present from students_in_class WHERE classID =  $courseName ";
 	 		$result = mysqli_query($connection, $sql);
 		 	$output = array();
+		 	
 		 	if (mysqli_num_rows($result) > 0) {
 			    while($row = mysqli_fetch_assoc($result)) {
 			        	$tmp = array();
 					    $tmp["studentID"] = $row["studentID"];
 					    $tmp["present"] = $row["present"];
-					    $path = $parentPath . $row["studentID"] . '.jpg';
+					    $path = $IMAGE_DIR . $row["studentID"] . '.jpg';
 						$type = pathinfo($path, PATHINFO_EXTENSION);
 						$data = file_get_contents($path);
 						$base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
