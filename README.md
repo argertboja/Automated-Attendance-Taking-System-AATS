@@ -29,18 +29,28 @@ to still be counted as present by letting their professor know that they were pr
 ### USER INTERFACE
 
 <li>Login View UI </li>
+
 ![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234003.jpg)
+
 <br><br>
 <li> Professor Main View UI </li>
+
 ![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233852.jpg)
+
 <br><br>
 <li>Professor No Courses Now View UI </li>
+
 ![login_no_course_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234146.jpg)
+
 <br><br>
 <li>Student Main View UI</li>
+
 ![login_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233954.jpg)
+
 <br><br>
 <li>Student No Courses Now View UI</li>
+
 ![login_no_course_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234117.jpg)
+
 
 
