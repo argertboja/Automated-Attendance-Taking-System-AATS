@@ -25,3 +25,25 @@ to still be counted as present by letting their professor know that they were pr
 <li> <a href="https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/Reports/03_High_Level_Design_Report.pdf"> Project High Level Design Report </a> </li>
 <li> <a href="https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/Reports/04_Low_Level_Design_Report.pdf"> Project Low Level Design Report </a> </li>
 </ol>
+
+### USER INTERFACE
+
+Login View UI
+![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234003.jpg)
+
+
+Professor Main View UI
+![login_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233852.jpg)
+
+
+Professor No Courses Now View UI
+![login_no_course_ui](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234146.jpg)
+
+
+Student Main View UI
+![login_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-233954.jpg)
+
+Student No Courses Now View UI
+![login_no_course_ui_student](https://github.com/argertboja/Automated-Attendance-Taking-System-AATS/blob/master/UI_pictures/Screenshot_20190424-234117.jpg)
+
+
