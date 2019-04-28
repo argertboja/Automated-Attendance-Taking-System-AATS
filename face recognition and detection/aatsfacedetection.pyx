@@ -12,6 +12,7 @@ rects = multiprocessing.Queue()
 def calcArea(rect1):
     return rect1.area()
 
+
 def overlap(rect1, rect2,A1,A2):
     rectOver = rect2.intersect(rect1)
     Aoverlap = rectOver.area()
@@ -86,3 +87,19 @@ def detectFaces(img,perMPfactor = 30):
 
             
     return rectangles
+    
+# This recognizes the biggest face in the picture
+def detectFace(img):
+    detector = dlib.get_frontal_face_detector()
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    dets = detector(img, 1)
+    result = None
+    maxArea = 0
+    for i,r in enumerate(dets):
+        rect = dlib.rectangle(r.left(),r.top(),r.right(),r.bottom())
+        if rect.area() > maxArea:
+            result = rect
+    return result
+
+
+
