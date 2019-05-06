@@ -2,7 +2,7 @@
 
 /* 
  2. UPDATE STUDENTS FACEVECTOR FROM RASPBERRY
- LINK_TEST: http://accentjanitorial.com/accentjanitorial.com/aats_admin/public_html/raspberry_update_student_facevector.php?ID=770253&password=123&studentList=21500342:1,21500009:1,21503525:1
+ LINK_TEST: https://bilmenu.com/aats/php/raspberry_update_student_facevector.php?ID=770253&password=123&studentList=21500342:1,21500009:1,21503525:1
 
  INPUT : ID = "770253"
  		password = "123"
@@ -15,6 +15,7 @@
 */					
 
 include "convert_functions.php";
+include __DIR__ . "/secure/encryption.php";
 
 $device_ID 		 = $_REQUEST['ID'];
 $device_password = $_REQUEST['password'];
@@ -46,7 +47,12 @@ if( !($location == "AUTH_FAILED_RASPBERRY") ){
 		while(key($result) ){
 			$studentID = (int) key($result);
 			$facevector =  current($result);
-			// echo $studentID . " = ";
+			if($facevector == null || $facevector == ""){
+				$facevector = "empty";
+			}
+			$facevector = encrypt($facevector);
+			// echo $facevector;
+
 			$sql = "UPDATE students SET facevector = '$facevector' , first_time = 1 WHERE ID = $studentID " ;
 			
 			$retval =  mysqli_query($connection, $sql);

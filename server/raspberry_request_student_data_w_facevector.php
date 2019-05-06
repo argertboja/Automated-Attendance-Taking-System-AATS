@@ -18,6 +18,7 @@
 */		
 
 include "convert_functions.php";
+include __DIR__ . "/secure/encryption.php";
 
 $device_ID 		 = $_REQUEST['ID'];
 $device_password = $_REQUEST['password'];
@@ -44,7 +45,12 @@ if( !($location == "AUTH_FAILED_RASPBERRY") ){
 		    while($row = mysqli_fetch_assoc($result)) {
 		    	$tmp = array();
 		    	$tmp["studentID"] =	$row["studentID"];
-		    	$tmp["facevector"] = $row["facevector"];
+		    	$fv = decrypt($row["facevector"]);
+		    	if($fv){
+		    		$tmp["facevector"] = $fv;
+		    	}else{
+		    		$tmp["facevector"] = "fv_data_attacked";
+		    	}		    	
 				array_push($output, $tmp);	
 		    }
 		     print(json_encode($output)); // PRINTS LIST OF ALL ENTRIES IN JSON FORMAT
