@@ -6,9 +6,7 @@ class Student extends User implements Serializable {
 
     private String present;
     private String currentCourse;
-
-
-
+    private String studentImage;
     private String current_hour;
 
     public Student(String user_ID,String user_password,String user_name,String user_surname,String user_email ){
@@ -39,4 +37,13 @@ class Student extends User implements Serializable {
     void setCurrentCourse(String currentCourse) {
         this.currentCourse = currentCourse;
     }
+
+    public String getStudentImage() {
+        return studentImage;
+    }
+
+    public void setStudentImage(String studentImage) {
+        this.studentImage = studentImage;
+    }
+
 }

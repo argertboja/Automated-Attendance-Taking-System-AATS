@@ -204,6 +204,7 @@ public class LoginActivity extends AppCompatActivity  {
         private String user_presence;
         private String user_password;
         private String professor_current_course;
+        private String user_student_image;
         private String current_hour;
         private String URL = "https://bilmenu.com/aats/php/login.php";
 
@@ -243,6 +244,7 @@ public class LoginActivity extends AppCompatActivity  {
                 mBundle.putString("user_presence", user_presence);
                 mBundle.putString("professor_current_course", professor_current_course);
                 mBundle.putString("current_hour", current_hour);
+                mBundle.putString("studentImage", user_student_image);
 
                 login_success.putExtras(mBundle);
                 startActivity(login_success);
@@ -336,6 +338,7 @@ public class LoginActivity extends AppCompatActivity  {
                             user_presence = json_data.getString("present");
 //                            Log.e("student__",user_presence);
                             professor_current_course = json_data.optString("classID");
+                            user_student_image = json_data.optString("studentImage");
                         } else {
 
                             user_presence = json_data.getString("present"); // user is professor, no presence

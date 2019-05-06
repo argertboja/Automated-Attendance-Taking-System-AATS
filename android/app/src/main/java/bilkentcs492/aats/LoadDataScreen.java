@@ -90,11 +90,14 @@ public class LoadDataScreen extends AppCompatActivity {
             String user_presence   = (getIntent().getExtras().getString("user_presence"));
             String  current_course = (getIntent().getExtras().getString("professor_current_course"));
             String current_hour    = (getIntent().getExtras().getString("current_hour"));
+            String user_image      = (getIntent().getExtras().getString("studentImage"));
+
             if( user_id != null && user_password != null && user_email != null && user_name != null && user_surname != null && user_presence != null && current_course != null && !current_course.equals(NO_COURSES_NOW)) {
                 student = new Student(user_id, user_password, user_name, user_surname, user_email);
                 student.setCurrentCourse(current_course);
                 student.setPresent(user_presence);
                 student.setCurrent_hour(current_hour);
+                student.setStudentImage(user_image);
                 return true;
             }
             return false;
