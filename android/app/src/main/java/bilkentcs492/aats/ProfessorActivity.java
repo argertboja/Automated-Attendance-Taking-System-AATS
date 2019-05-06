@@ -135,12 +135,12 @@ public class ProfessorActivity extends AppCompatActivity {
         number_students_present = professor.getNum_present_students() ;
         number_students_absent = professor.getNum_absent_students();
         number_students_total = number_students_present + number_students_absent;
-        percentage_ratio = professor.getAttendance_percentage();
+        percentage_ratio = professor.getAttendance_percentage() ;
 
         presentNum.setText(String.valueOf(number_students_present));
         absentNum.setText(String.valueOf(number_students_absent));
         totalNum.setText(String.valueOf(number_students_total));
-        percentage_num.setText(String.valueOf(percentage_ratio));
+        percentage_num.setText(String.valueOf(percentage_ratio) + "%");
         professor_name.setText(professor.getUser_name());
         professor_surnname.setText(professor.getUser_surname());
         current_hour.setText(professor.getCurrent_hour());
