@@ -23,7 +23,6 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +59,7 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View row = convertView;
         ViewHolder holder;
-        Log.e("EMPTY CHECK: 0","");
+
         if (row == null) {
             LayoutInflater inflater = activity.getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
@@ -86,14 +85,13 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
         String colorCode = (item.isPresent()) ? "#1CCF09" : "#D6032D";
         holder.presentState.setText(presenceText);
         holder.presentState.setTextColor(Color.parseColor(colorCode));
-//        holder.group.setBackgroundColor(Color.parseColor(colorCode));
-//        Log.e("EMPTY CHECK: 1",""+(item.getImage()));
+
         final byte[] decodedBytes = Base64.decode(item.getImage(), Base64.DEFAULT);
 
         Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
         decodedBitmap = Bitmap.createScaledBitmap(decodedBitmap, 125, 120, false);
         decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
-//        Log.e("___EMPTY CHECK : 2",""+(decodedBitmap==null));
+
         holder.image.setImageBitmap(decodedBitmap);
 
         lastPosition = position;
@@ -115,25 +113,24 @@ public class StudentsGridViewAdaptor extends ArrayAdapter<ImageItem> {
 
          // empty arraylist initially upon starting search
          data.clear();
-        Log.e("clear text=",searchKey);
 
         //if empty query show all elements
         if (searchKey.length() == 0) {
             data.addAll(filterData);
-            Log.e("clear text length0=",searchKey);
+
 
         } else {
 
             //loop through present data and filter all the data, then refresh the data array
             for (int i = 0; i < filterData.size();i++) {
-                Log.e("____inside loop",searchKey);
+
 
                 if (filterData.get(i).getStudentID().toLowerCase().contains(searchKey)) {
                     data.add(filterData.get(i));
                 }
 
             }
-            Log.e("+++++outtt loop",filterData.size()+")");
+
 
         }
 

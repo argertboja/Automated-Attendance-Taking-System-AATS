@@ -24,7 +24,6 @@ import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,9 +96,7 @@ public class ProfessorCourseViewFragment extends Fragment {
             professorId = getArguments().getString("user_id");
             professorPassword = getArguments().getString("user_password");
             professorCurrentCourse = getArguments().getString("professor_current_course");
-            Log.e("%%%%",""+professorCurrentCourse+"_");
-            Log.e("%%%%ID",""+professorId+"_");
-            Log.e("%%%%pasw",""+professorPassword+"_");
+
         }
         courseID.setText(professorCurrentCourse);
         gridView = (GridView) rootView.findViewById(R.id.grid_view);
@@ -121,8 +118,7 @@ public class ProfessorCourseViewFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.e("edit text=",charSequence+"_");
-                adapter.filter( charSequence.toString());
+               adapter.filter( charSequence.toString());
             }
 
             @Override
@@ -157,7 +153,6 @@ public class ProfessorCourseViewFragment extends Fragment {
                 params.add(new QueryParameter("password", professorPassword));
                 retrieve_professors_course_data.setParams(params);
 
-                Log.e("()",professorId + "_" + professorPassword    );
                 JSONArray receiveData = retrieve_professors_course_data.requestAndFetch(getActivity());
                 if( receiveData != null) {
                         for (int i = 0; i < receiveData.length(); i++) {
@@ -176,8 +171,7 @@ public class ProfessorCourseViewFragment extends Fragment {
                                     decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
                                     imageItems.add(new ImageItem(base64, studentID, false));
                                 } catch (JSONException e) {
-                                    Log.e("JSONException", "Error Parsing Student Data");
-                                    Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
+                                     Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(currentContext, "Error Parsing Student Data", Toast.LENGTH_LONG).show();
@@ -198,7 +192,7 @@ public class ProfessorCourseViewFragment extends Fragment {
 
         });
              t.start();
-        Log.e("size ===", imageItems.size()+"");
+
         while(t.isAlive()){
             // do nothing
         }
@@ -314,7 +308,6 @@ public class ProfessorCourseViewFragment extends Fragment {
     // UPLOAD HAPPENS HERE
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("_________ ERROR: "+resultCode,"Error " + requestCode);
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
@@ -349,7 +342,7 @@ public class ProfessorCourseViewFragment extends Fragment {
                     List<QueryParameter> params = new ArrayList<>();
                     params.add(new QueryParameter("ID",professorId ));
                     params.add(new QueryParameter("password",professorPassword ));
-                    Log.e("pasw: " , professorId +"_" +professorPassword);
+
                     params.add(new QueryParameter("image",image_str ));
                     params.add(new QueryParameter("filename",""+student_objection_ID + ".jpg" ));
                     uploadRequest.setParams(params);

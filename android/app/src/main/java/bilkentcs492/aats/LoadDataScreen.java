@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -149,10 +148,6 @@ public class LoadDataScreen extends AppCompatActivity {
                     ( professor).setAttendance_percentage(); // set within the class
                     ( professor).setCurrent_hour(current_hour); // set within the class
 
-                    Log.e("empty__",(professor.getCurrentCourse()) + "" );
-                    Log.e("empty__",(professor.getNum_present_students()) + "" );
-                    Log.e("empty__",(professor.getNum_absent_students()) + "" );
-                    Log.e("empty__",(professor.getNum_total_students()) + "" );
                     return true;
                 }
                 return false;
@@ -229,8 +224,7 @@ public class LoadDataScreen extends AppCompatActivity {
                             boolean present = (Integer.parseInt(presenc) == 1) ;
                             imageItems.add(new ImageItem(base64, studentID, present));
                         } catch (JSONException e) {
-                            Log.e("JSONException", "Error Parsing Student Data");
-                            Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
+                             Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(getApplicationContext(), "Error Parsing Student Data", Toast.LENGTH_LONG).show();
@@ -252,7 +246,7 @@ public class LoadDataScreen extends AppCompatActivity {
 
         });
         t.start();
-        Log.e("size ===", imageItems.size()+"");
+
         while(t.isAlive()){
             // do nothing
         }

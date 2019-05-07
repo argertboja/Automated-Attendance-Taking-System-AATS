@@ -2,7 +2,6 @@ package bilkentcs492.aats;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -61,7 +60,6 @@ public class ServerRequest {
 
         } catch (final MalformedURLException e) {
             // TODO Auto-generated catch block
-            Log.e("MalformedURLException: ", "Error forming URL");
             e.printStackTrace();
             activity.runOnUiThread(new Runnable() {
                 String response;
@@ -101,7 +99,6 @@ public class ServerRequest {
 
         } catch (final IOException e1) {
             // TODO Auto-generated catch block
-            Log.e("IOException: ", "Error sending POST request");
             e1.printStackTrace();
             activity.runOnUiThread(new Runnable() {
                 String response;
@@ -138,7 +135,6 @@ public class ServerRequest {
             }
             return null;
         } catch (final IOException e) {
-            Log.e("IOException: ", "Error receiving RESPONSE from server");
             e.printStackTrace();
             activity.runOnUiThread(new Runnable() {
                 String response;
@@ -174,7 +170,6 @@ public class ServerRequest {
 
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
-            Log.e("MalformedURLException: ", "Error forming URL");
             e.printStackTrace();
         }
 
@@ -206,7 +201,6 @@ public class ServerRequest {
 
         } catch (IOException e1) {
             // TODO Auto-generated catch block
-            Log.e("IOException: ", "Error sending POST request");
             e1.printStackTrace();
         }
 
@@ -232,7 +226,6 @@ public class ServerRequest {
                 uploadResponse = result.toString();
 
                 if (uploadResponse.equals("null")){
-                    Log.e("ERROR : TRY AGAIN!:",uploadResponse);
                     activity.runOnUiThread(new Runnable() {
                         String response;
                         @Override
@@ -252,7 +245,6 @@ public class ServerRequest {
 
             }
         } catch (IOException e) {
-            Log.e("IOException: ", "Error receiving RESPONSE from server");
             e.printStackTrace();
         }
     }
@@ -266,15 +258,3 @@ public class ServerRequest {
         return builder;
     }
 }
-
-
-// code for printing json data for testing
-//                        for (int i = 0; i < jArray.length(); i++) {
-//                            JSONObject json_data = jArray.getJSONObject(i);
-//                            Log.i("log_tag", "id: " + json_data.getInt("ID") +
-//                                    ", name: " + json_data.getString("name") +
-//                                    ", surname: " + json_data.getString("surname") +
-//                                    ", email: " + json_data.getString("email") +
-//                                    ", present: " + json_data.getString("present")
-//                            );
-//                        }

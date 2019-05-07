@@ -20,7 +20,6 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -85,9 +84,6 @@ public class ProfessorActivity extends AppCompatActivity {
 
         professor  = (Professor) getIntent().getExtras().getSerializable("ProfessorData");;
 
-        if(professor == null){
-            Log.e("NULL","nullllll");
-        }
         searchBar = (EditText) findViewById(R.id.search_bar) ;
         TextView courseID = findViewById(R.id.course_ID);
         presentNum = findViewById(R.id.present_num);
@@ -102,9 +98,7 @@ public class ProfessorActivity extends AppCompatActivity {
 
         //set up grid view data
         gridView = (GridView) findViewById(R.id.grid_view);
-        if(professor.getCurrentCourse() == null){
-            Log.e("NULL","");
-        }
+
         items = professor.getListOfCurrentStudents();
         studentList = items;
         adapter = new StudentsGridViewAdaptor(ProfessorActivity.this, R.layout.grid_item_layout ,items);
@@ -120,7 +114,6 @@ public class ProfessorActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                Log.e("edit text=",charSequence+"_");
                 adapter.filter( charSequence.toString());
             }
 
@@ -249,7 +242,6 @@ public class ProfessorActivity extends AppCompatActivity {
     // UPLOAD AND MARK PRESENCE HAPPENS HERE
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("_________ ERROR: "+resultCode,"Error " + requestCode);
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
@@ -284,7 +276,7 @@ public class ProfessorActivity extends AppCompatActivity {
                     List<QueryParameter> params = new ArrayList<>();
                     params.add(new QueryParameter("ID",professor.getUser_ID() ));
                     params.add(new QueryParameter("password", professor.getUser_password() ));
-//                    Log.e("pasw: " , user_id +"_" +user_password);
+
                     params.add(new QueryParameter("image",image_str ));
                     params.add(new QueryParameter("filename",""+student_objection_ID  ));
                     uploadRequest.setParams(params);
@@ -484,7 +476,6 @@ public class ProfessorActivity extends AppCompatActivity {
      */
     private Bitmap scaleDownToRatio(Bitmap bitmap){
         Matrix m = new Matrix();
-//        Log.d("w and h :",bitmap.getWidth()+"__"+  bitmap.getHeight() );
         m.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), new RectF(0, 0, BITMAP_SMALL_WIDTH, BITMAP_SMALL_HEIGHT), Matrix.ScaleToFit.CENTER);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
     }

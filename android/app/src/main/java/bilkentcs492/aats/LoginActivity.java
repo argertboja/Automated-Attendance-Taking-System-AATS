@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -316,15 +315,10 @@ public class LoginActivity extends AppCompatActivity  {
                 try {
                     json_data = receiveData.getJSONObject(0);
 
-                    if (json_data.optString("response") == null) {
-                        Log.e("HELLOO--", json_data.optString("response"));
-                    } else {
-                        auth_result = json_data.optString("response");
-                        Log.e("HELLOO--", auth_result);
-                    }
+                    auth_result = json_data.optString("response");
+
                 } catch (final JSONException e) {
-//                    Log.e("JSONException:AUTH_MSG", "Error with JSON parsing RESPONSE");
-                    e.printStackTrace();
+                     e.printStackTrace();
                     LoginActivity.this.runOnUiThread(new Runnable() {
                        @Override
                         public void run() {
@@ -333,9 +327,9 @@ public class LoginActivity extends AppCompatActivity  {
                     });
                     return false;
                 }
-                Log.e("ZZZZZ", auth_result);
+
                 if (auth_result.equals("AUTH_FAILED")) {
-//                    Log.e("not AUTHENTICATED", "wrong credentials");
+
                     LoginActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -344,7 +338,7 @@ public class LoginActivity extends AppCompatActivity  {
                     });
                     return false; // authentication failed
                 }else if(auth_result.equals("FAILED TO CONNECT TO MYSQL!")){
-                    Log.e("not AUTHENTICATED", "wrong credentials");
+
                     LoginActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -371,22 +365,18 @@ public class LoginActivity extends AppCompatActivity  {
                         current_hour = json_data.getString("current_hour");
                         if (!json_data.getString("present").equals("-1")) {
                             user_presence = json_data.getString("present");
-//                            Log.e("student__",user_presence);
+
                             professor_current_course = json_data.optString("classID");
                             user_student_image = json_data.optString("studentImage");
                         } else {
 
                             user_presence = json_data.getString("present"); // user is professor, no presence
                             professor_current_course = json_data.optString("classID");
-                            Log.d ("pres:","" + user_presence );
-                            Log.d ("user_name:","" + user_name );
-                            Log.d ("user_surname:","" + user_surname );
-                            Log.d ("current_course:","" + professor_current_course );
-//                            Log.e("professor__",professor_current_course);
+
                         }
                         return true;
                     } catch (final JSONException e) {
-//                        Log.e("JSONException: ", "Error with JSON parsing");
+
                         e.printStackTrace();
                         LoginActivity.this.runOnUiThread(new Runnable() {
                             @Override

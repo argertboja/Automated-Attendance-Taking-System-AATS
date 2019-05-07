@@ -128,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    Log.e("edit text=",charSequence+"_");
-                    adapter.filter( charSequence.toString());
+                   adapter.filter( charSequence.toString());
                 }
 
                 @Override
@@ -245,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
                 params.add(new QueryParameter("password", user_password));
                 retrieve_professors_course_data.setParams(params);
 
-                Log.e("()",user_id + "_" + user_password    );
                 JSONArray receiveData = retrieve_professors_course_data.requestAndFetch(MainActivity.this);
                 if( receiveData != null) {
                     for (int i = 0; i < receiveData.length(); i++) {
@@ -264,7 +262,6 @@ public class MainActivity extends AppCompatActivity {
                             decodedBitmap = getRoundedCornerBitmap(decodedBitmap, 12);
                             imageItems.add(new ImageItem(base64, studentID, false));
                         } catch (JSONException e) {
-                            Log.e("JSONException", "Error Parsing Student Data");
                             Objects.requireNonNull(MainActivity.this).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -286,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
         t.start();
-        Log.e("size ===", imageItems.size()+"");
+
         while(t.isAlive()){
             // do nothing
         }
@@ -392,7 +389,6 @@ public class MainActivity extends AppCompatActivity {
     // UPLOAD HAPPENS HERE
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("_________ ERROR: "+resultCode,"Error " + requestCode);
 
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
 
@@ -426,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
                     List<QueryParameter> params = new ArrayList<>();
                     params.add(new QueryParameter("ID",user_id ));
                     params.add(new QueryParameter("password",user_password ));
-                    Log.e("pasw: " , user_id +"_" +user_password);
+
                     params.add(new QueryParameter("image",image_str ));
                     params.add(new QueryParameter("filename",""+student_objection_ID + ".jpg" ));
                     uploadRequest.setParams(params);

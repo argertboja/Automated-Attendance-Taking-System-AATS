@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -26,9 +25,7 @@ public class StudentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
         student  = (Student) getIntent().getExtras().getSerializable("StudentData");
-        if (student == null) {
-            Log.e("NULL","nullllll");
-        }
+
         TextView accountOwner = findViewById(R.id.accountOwner);
         TextView studentCourse = findViewById(R.id.student_current_course);
         TextView student_current_hour = findViewById(R.id.current_hour_student);
