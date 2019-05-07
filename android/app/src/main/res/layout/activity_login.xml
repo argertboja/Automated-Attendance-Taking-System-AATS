@@ -83,6 +83,36 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="0.1"
+                android:weightSum="10"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/checkBox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Agree to " />
+
+                <TextView
+                    android:id="@+id/privacy_policy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#0927C7"
+                    android:contextClickable="true"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:text="Privacy Policies" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/privacyLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:text="" />
 
         </LinearLayout>
     </ScrollView>

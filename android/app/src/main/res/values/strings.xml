@@ -29,4 +29,12 @@
     <string name="absent">Absent</string>
     <string name="present">Present</string>
     <string name="ok">OKAY</string>
+    <string name="privacy_info"><![CDATA[<b>Data Storage Information: </b><br>We do not store any data into the local
+storage of your android device. All data is directly received from the server.<br><br><b>Server Connection</b>
+<br>The connection with the server is done through a secure SSL and therefore cannot be compromised. <br><br><b>Encryption</b>
+<br>The sensitive data used and transmitted from and to this app is secured through end-to-end encryption.<br><br>
+By agreeing to the terms and services you give full consent to this application to make use of the
+private data provided by you regarding pictures of you taken from professors. From our part of agreement
+we encrypt your image data such that it is invisible for us as well to ensure that your private
+information is not breached]]></string>
 </resources>

@@ -3,12 +3,15 @@ package bilkentcs492.aats;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -18,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +60,10 @@ public class LoginActivity extends AppCompatActivity  {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private CheckBox mCheckBox;
+    private TextView mLayout;
+    AlertDialog.Builder dialog_builder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +71,8 @@ public class LoginActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mIDView = (AutoCompleteTextView) findViewById(R.id.id);
-
+        mCheckBox = (CheckBox) findViewById(R.id.checkBox);
+        mLayout =  findViewById(R.id.privacyLayout);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -73,6 +82,26 @@ public class LoginActivity extends AppCompatActivity  {
                     return true;
                 }
                 return false;
+            }
+        });
+
+        dialog_builder = new AlertDialog.Builder(LoginActivity.this);
+        dialog_builder.setCancelable(false);
+        dialog_builder.setTitle("Privacy Policy");
+        dialog_builder.setMessage(Html.fromHtml(getString(R.string.privacy_info)));
+
+        dialog_builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+
+
+            TextView privacyButton = (TextView) findViewById(R.id.privacy_policy);
+        privacyButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog_builder.show();
             }
         });
 
@@ -125,6 +154,12 @@ public class LoginActivity extends AppCompatActivity  {
         if (TextUtils.isEmpty(id)) {
             mIDView.setError(getString(R.string.error_field_required));
             focusView = mIDView;
+            cancel = true;
+        }
+
+        if(!mCheckBox.isChecked()){
+            mLayout.setError("You need to agree to our privacy policies");
+            focusView = mCheckBox;
             cancel = true;
         }
 
