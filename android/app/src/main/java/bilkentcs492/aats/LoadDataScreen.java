@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -113,6 +114,7 @@ public class LoadDataScreen extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }else{
+
                 dialog_builder.show();
                 Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
                     @Override
@@ -168,7 +170,7 @@ public class LoadDataScreen extends AppCompatActivity {
             }else{
 
                 dialog_builder.show();
-
+                Log.e("ERROR:","POST EXECUTE");
 //                Objects.requireNonNull(LoadDataScreen.this).runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {

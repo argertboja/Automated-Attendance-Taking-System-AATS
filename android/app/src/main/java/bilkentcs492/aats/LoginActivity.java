@@ -13,7 +13,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
@@ -268,6 +272,7 @@ public class LoginActivity extends AppCompatActivity  {
             showProgress(false);
 
             if (success) {
+                Log.e("error login", "success");
                 Intent login_success = new Intent(LoginActivity.this, LoadDataScreen.class);
                 Bundle mBundle = new Bundle();
                 mBundle.putString("user_id", id);
@@ -284,6 +289,7 @@ public class LoginActivity extends AppCompatActivity  {
                 startActivity(login_success);
                 finish();
             } else {
+                Log.e("error login", "fail");
                 mPasswordView.setError(getString(R.string.error_incorrect_credentials));
                 mPasswordView.requestFocus();
             }
@@ -291,6 +297,7 @@ public class LoginActivity extends AppCompatActivity  {
 
         @Override
         protected void onCancelled() {
+            Log.e("error canceled", "fail");
             mAuthTask = null;
             showProgress(false);
         }
@@ -398,5 +405,28 @@ public class LoginActivity extends AppCompatActivity  {
             }
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.login_menu, menu);
+        return true;
+    }
+
+    // handle button activities
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.infoButton){
+            Intent logout = new Intent(LoginActivity.this, Information.class);
+            Toast.makeText(getApplicationContext(), "App Info", Toast.LENGTH_LONG).show();
+            startActivity(logout);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }
 

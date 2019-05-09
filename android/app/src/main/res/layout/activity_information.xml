@@ -9,14 +9,7 @@
     tools:context=".Information">
 
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:color="@color/white"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/AppTheme" />
+
 
     <LinearLayout
         android:layout_width="match_parent"

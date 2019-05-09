@@ -497,6 +497,10 @@ public class ProfessorActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Logging Out", Toast.LENGTH_LONG).show();
             startActivity(logout);
             finish();
+        }else if (id == R.id.infoButton){
+            Intent logout = new Intent(ProfessorActivity.this, Information.class);
+            Toast.makeText(getApplicationContext(), "App Info", Toast.LENGTH_LONG).show();
+            startActivity(logout);
         }
         return super.onOptionsItemSelected(item);
     }

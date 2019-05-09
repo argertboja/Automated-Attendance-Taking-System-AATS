@@ -88,7 +88,7 @@ public class ProfessorCourseViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-            rootView =  (View) inflater.inflate(R.layout.activity_main, container, false);
+            rootView =  (View) inflater.inflate(R.layout.content_main, container, false);
         currentContext = rootView.getContext();
         searchBar = (EditText) rootView.findViewById(R.id.search_bar) ;
         TextView courseID = rootView.findViewById(R.id.course_ID);
